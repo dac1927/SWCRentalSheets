@@ -130,7 +130,7 @@ function onEdit(e) {
          raw = b.getValues().join().split(',').filter(Boolean);//FINISH THIS STUFF
          rack = (raw.matches(".*(-R)") ? "-R" : "");
          stripped = raw.replace('-R','');
-	 letter = stripped.match(/^.*[A-J]$/);
+	 letter = stripped.match(/^.*[A-J]$/);//id letter
          Logger.log(letter);
 	 storeObject(id,raw);
          sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
