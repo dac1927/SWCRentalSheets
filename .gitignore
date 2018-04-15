@@ -1,7 +1,7 @@
 # CLASP Files #
 ######################
-.json
-.claspignore
+*.json
+*.claspignore
 # OS generated files #
 ######################
 .DS_Store
