@@ -24,7 +24,7 @@ function setUp() {
     var temp;
     var columnKeyStringArray = sheet.getRange('rentals!A1:' + columnToLetter(sheet.getLastColumn()) + '1').getValues().join().split(','); //retrive the rental's x-keys
     var rowKeyStringArray = sheet.getRange('rentals!A1:' + 'A' + sheet.getLastRow()).getValues().join().split(',');       //retrive the rental's y-keys
-    var BreakException = {};                  
+    var BreakException = {};
       for(i = 0; i < rowKeyStringArray.length; i++) {              //entering key-value pairs for rental bikes on rental sheet
         if (rowKeyStringArray[i] != "" && rowKeyStringArray[i] != undefined && rowKeyStringArray[i] != null) { // the cell isn't empty
            if (rowDict[rowKeyStringArray[i]] != undefined) {
@@ -56,7 +56,7 @@ function setUp() {
     }
     for (var key in rezRowDict) {
       // check if the property/key is defined in the object itself, not in parent
-      if (rezRowDict.hasOwnProperty(key) && key != undefined && key != null && key != "") {           
+      if (rezRowDict.hasOwnProperty(key) && key != undefined && key != null && key != "") {
           rezRowDict[key] = JSON.stringify(rezRowDict[key]);
       }
     }
@@ -80,10 +80,10 @@ function setUp() {
             columnDict[dateFormat(new Date(columnKeyStringArray[i]))] = columnToLetter(i + 1);
           }
     }
-    
+
     PropertiesService.getScriptProperties().setProperties(columnDict);
     colorToday();
-   
+
 }
 function onEdit(e) {
    var sheet = SpreadsheetApp.getActiveSheet();
@@ -130,7 +130,7 @@ function onEdit(e) {
          raw = b.getValues().join().split(',').filter(Boolean);//FINISH THIS STUFF
          rack = (raw.matches(".*(-R)") ? "-R" : "");
          stripped = raw.replace('-R','');
-         
+	 letter = stripped.match(/^.*[A-J]$/);
          storeObject(id,raw);
          sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
          }
