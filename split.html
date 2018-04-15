@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+<html>
+  <script>
+  google.script.run.withSuccessHandler(load).withFailureHandler(function(msg,element){window.alert("failed"); }).getBikes();
+  function load(bikes) {
+  var main = document.getElementById('main');
+  var divs = document.getElementsByName('check');
+  var labels = document.getElementsByName('checktext')
+  for(var i = 0; i < divs.length; i++) {
+    if(bikes[i] != null ) {
+      labels[i].innerHTML = bikes[i];
+    }
+    else {
+     divs[i].style.display = 'none';
+    }
+  }
+  main.style.display = 'block';
+}
+  function splitRentals() {
+  var divs = document.getElementsByName('check');
+  var checks = document.getElementsByName('checkbox');
+  var labels = document.getElementsByName('checktext');
+  var bikes = {checked: [], unchecked: []};
+  for(var i = 0; i < checks.length; i++) {
+      if (checks[i].checked) {
+         bikes.checked[bikes.checked.length] = labels[i].innerHTML;
+      }
+      else if (divs[i].style.display != 'none'){
+         bikes.unchecked[bikes.unchecked.length] = labels[i].innerHTML;
+      }
+  }
+  google.script.run.withSuccessHandler(onSplit).withFailureHandler(function(msg,element){window.alert("failed"); }).createSplitRentals(bikes)
+  function onSplit(completed) {
+    if (completed)
+    google.script.host.close();
+  }
+  }
+  </script>
+  <body id = 'main' style="display:none;">
+    <label for = 'checks'>Select Bikes to go in first Rental:</label>
+  <div id = 'checks'>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox1" name = 'checkbox'>
+    <label for="checkbox1" name = 'checktext'>check1</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox2" name = 'checkbox'>
+    <label for="checkbox2" name = 'checktext'>check2</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox3" name = 'checkbox'>
+    <label for="checkbox3" name = 'checktext'>check3</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox4" name = 'checkbox'>
+    <label for="checkbox4" name = 'checktext'>check4</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox5" name = 'checkbox'>
+    <label for="checkbox5" name = 'checktext'>check5</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox6" name = 'checkbox'>
+    <label for="checkbox6" name = 'checktext'>check6</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox7" name = 'checkbox'>
+    <label for="checkbox7" name = 'checktext'>check7</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox8" name = 'checkbox'>
+    <label for="checkbox8" name = 'checktext'>check8</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox9" name = 'checkbox'>
+    <label for="checkbox9" name = 'checktext'>check9</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox10" name = 'checkbox'>
+    <label for="checkbox10" name = 'checktext'>check10</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox11" name = 'checkbox'>
+    <label for="checkbox11" name = 'checktext'>check11</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox12" name = 'checkbox'>
+    <label for="checkbox12" name = 'checktext'>check12</label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox13" name = 'checkbox'>
+    <label for="checkbox13" name = 'checktext'>check13</label>
+  </div>
+  </div>
+  <div class= "button-bar">
+  <button class = 'blue' onclick = "splitRentals()">Submit</button>
+  <button onclick = "google.script.host.close()">Cancel</button>
+  </div>
+  </body>
+</html>
+
+

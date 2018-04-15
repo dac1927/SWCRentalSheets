@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<script>
+google.script.run.withSuccessHandler(loadRental)
+    .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
+function performAction() {
+  
+  var select = document.getElementById('select')
+  window.alert(select.selectedIndex)
+  switch(select.selectedIndex) {
+    case 0:
+        enterRental();
+        break;
+    case 1:
+        splitRental();
+        break;
+    case 2:
+        deleteRental();
+        break;
+    case 3:
+        google.script.run.withSuccessHandler(loadRental)
+    .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
+    default:
+        window.alert("Selection doesn't exist");
+  }
+}
+function loadRental(rentals) {
+  var main = document.getElementById('main');
+  var divs = document.getElementsByName('check');
+  var labels = document.getElementsByName('checktext')
+  for(var i = 0; i < divs.length; i++) {
+    if(rentals[i] != null ) {
+      labels[i].setAttribute('rentalid', rentals[i].id);
+      labels[i].innerHTML = rentals[i].bikes;
+    }
+    else {
+     divs[i].style.display = 'none';
+    }
+  }
+  main.style.display = 'block';
+}
+function enterRental() {
+    var checks = document.getElementsByName('checkbox');
+    var labels = document.getElementsByName('checktext');
+    var date = document.getElementById('dateinput').value
+    var name = document.getElementById('nameinput').value
+    var ids = [];
+    for(var i = 0; i < checks.length; i++) {
+      if (checks[i].checked) {
+         ids[ids.length] = labels[i].getAttribute('rentalid');
+      }
+    }
+    google.script.run.withSuccessHandler(onSuccess).finishRental(name, date, ids);
+    function onSuccess(finished) {
+        if(finished)
+        google.script.run.withSuccessHandler(loadRental)
+    .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
+    }
+}
+function deleteRental() {
+  var checks = document.getElementsByName('checkbox');
+  var labels = document.getElementsByName('checktext');
+  var ids = [];
+  for(var i = 0; i < checks.length; i++) {
+      if (checks[i].checked) {
+         ids[ids.length] = labels[i].getAttribute('rentalid');
+      }
+    }
+   google.script.run.withSuccessHandler(onSuccess).deleteRental(ids)
+   function onSuccess(completed) {
+     if (completed)
+     google.script.run.withSuccessHandler(loadRental)
+    .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
+   }
+}
+</script>
+
+

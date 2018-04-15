@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+	
+<style>
+.branding-below {
+  bottom: 56px;
+  top: 0;
+}
+</style>
+
+<body>
+<script>
+function performAction() {
+}
+function loadRental(rentals) {
+  var main = document.getElementById('main');
+  var divs = document.getElementsByName('check');
+  var labels = document.getElementsByName('checktext')
+  for(var i = 0; i < 6; i++) {
+    if(rentals[i] != null ) {
+      labels[i].setAttribute('rentalid', rentals[i].id);
+      labels[i].innerHTML = rentals[i].bikes;
+    }
+    else {
+     divs[i].style.display = 'none';
+    }
+  }
+  main.style.display = 'block';
+}
+function enterRental() {
+    var checks = document.getElementsByName('checkbox');
+    var labels = document.getElementsByName('checktext');
+    var date = document.getElementById('dateinput').value
+    var name = document.getElementById('nameinput').value
+    var ids = [];
+    for(var i = 0; i < checks.length; i++) {
+      if (checks[i].checked) {
+         ids[ids.length] = labels[i].getAttribute('rentalid');
+      }
+    }
+    google.script.run.withSuccessHandler(onSuccess).finishRental(name, date, ids);
+    function onSuccess(finished) {
+        if(finished)
+        google.script.run.withSuccessHandler(loadRental)
+    .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
+    }
+}
+function deleteRental() {
+  var checks = document.getElementsByName('checkbox');
+  var labels = document.getElementsByName('checktext');
+  var ids = [];
+  for(var i = 0; i < checks.length; i++) {
+      if (checks[i].checked) {
+         ids[ids.length] = labels[i].getAttribute('rentalid');
+      }
+    }
+   google.script.run.withSuccessHandler(onSuccess).deleteRental(ids)
+   function onSuccess(completed) {
+     if (completed)
+     google.script.run.withSuccessHandler(loadRental)
+    .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
+   }
+}
+google.script.run.withSuccessHandler(loadRental)
+    .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
+</script>
+<div class="sidebar branding-below" id = 'main' style="display:none;">
+<label for = 'checks'>Unfinished Rentals:</label>
+ <div id = 'checks'>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox1" name = 'checkbox'>
+    <label for="checkbox1" name = 'checktext'></label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox2" name = 'checkbox'>
+    <label for="checkbox2" name = 'checktext'></label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox3" name = 'checkbox'>
+    <label for="checkbox3" name = 'checktext'></label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox4" name = 'checkbox'>
+    <label for="checkbox4" name = 'checktext'></label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox5" name = 'checkbox'>
+    <label for="checkbox5" name = 'checktext'></label>
+  </div>
+  <div name = 'check'>
+    <input type="checkbox" id="checkbox6" name = 'checkbox'>
+    <label for="checkbox6" name = 'checktext'></label>
+  </div>
+ </div>
+ <label for = 'date'>End date:</label>
+ <div class="block" id = 'date'>
+   <input type = 'date' id = 'dateinput'>
+ </div>
+ <label for = 'name'>Rental Name:</label>
+ <div class="block" id = 'name'>
+   <input type = 'text' id = 'nameinput'>
+ </div>
+ <div class="block form-group">
+   <label for="select">Select Action:</label>
+   <select id="select">
+     <option selected>Finish Rentals</option>
+     <option>Split Rentals</option>
+     <option>Delete Rentals</option>
+   </select>
+    <button class "blue" onclick = "performAction()">Submit</button>
+  </div>
+</div>
+<div class="sidebar bottom">
+  <span class="gray">
+    Rental Tools by Devin Christianson</span>
+</div>
+</body>
