@@ -131,7 +131,8 @@ function onEdit(e) {
          rack = (raw.matches(".*(-R)") ? "-R" : "");
          stripped = raw.replace('-R','');
 	 letter = stripped.match(/^.*[A-J]$/);
-         storeObject(id,raw);
+         Logger.log(letter);
+	 storeObject(id,raw);
          sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
          }
        } else {
