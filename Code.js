@@ -120,7 +120,7 @@ function onEdit(e) {
      var ct = 0;
      var id;
      var idList;
-     var raw, stripped, rack, letter;
+     var raw, split;
      while (erange[ct]) {
          var letter = "J"
          rm = 0;
@@ -152,11 +152,13 @@ function onEdit(e) {
          idList = retriveObject("IDLIST");
          idList.push(id);
          storeObject("IDLIST",idList);
-         raw = b.getValues().join().split(',').filter(Boolean);//FINISH THIS STUFF
-         rack = (raw[0].matches(".*(-R)") ? "-R" : "");
-         stripped = raw.replace('-R','');
-	       letter = stripped.match(/^.*[A-J]$/);//id letter
-         Logger.log(letter);
+         raw = b.getValues().join().split(',').filter(Boolean);//new syntax: H19:A-R
+         split = raw[0].split(/:|-/);
+         Logger.log("Bike type/size: " + split[0]);
+         Logger.log("letter: " + split[1]);
+         Logger.log("rack: " + (split[2] ? "True" : "False"));
+         var bike = {type: split[0], letter: split[1], rack: (split[2] ? true : false)};
+         storeObject((id + "n"), bike);
 	       storeObject(id,raw);
          sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
          }
@@ -392,9 +394,9 @@ function hardReset() {
 }
 function colorPotential(bikeID, name, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
-  var bikes = retriveObject(bikeID);
-  var wRack = retriveObject(bikeID + "R");
-  if(wRack != null)
+  var bikes = retriveObject(bikeID);                   //retriving potential area w/o rack
+  var wRack = retriveObject(bikeID + "R");             //retriving potential area w/ rack
+  if(wRack != null)                                    //if theres space with rack, add to the end of possibilites
     bikes.concat(wRack);
   var today = new Date();
   var startID = findColumn(today);
@@ -474,7 +476,5 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
   }
 }
 function test() {
-      var date = new Date();
-      date.setDate(date.getDate() + 1);
-      Logger.log(colorPotential("H17", "Dude", date, false));
+      hardReset();
 }
