@@ -153,12 +153,17 @@ function onEdit(e) {
          idList.push(id);
          storeObject("IDLIST",idList);
          raw = b.getValues().join().split(',').filter(Boolean);//new syntax: H19:A-R
-         split = raw[0].split(/:|-/);
-         Logger.log("Bike type/size: " + split[0]);
-         Logger.log("letter: " + split[1]);
-         Logger.log("rack: " + (split[2] ? "True" : "False"));
-         var bike = {type: split[0], letter: split[1], rack: (split[2] ? true : false)};
-         storeObject((id), bike);
+         var bikeList = [];
+         var bikeTemp;
+         for(var a = 0; a < raw.length; a++) {
+            split = raw[a].split(/:|-/);    //splitting id into it's components
+            Logger.log("Bike type/size: " + split[0]);
+            Logger.log("letter: " + split[1]);
+            Logger.log("rack: " + (split[2] ? "True" : "False"));
+            bikeTemp = {type: split[0], letter: split[1], rack: (split[2] ? true : false)};
+            bikeList.push(bikeTemp); //adding the bike to the list
+         }
+         storeObject(id, bikeList);                 //storing the list
          sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
          }
        } else {
@@ -259,16 +264,16 @@ function getNextRentals() {
   var ids = retriveObject('IDLIST');
   var rentals = [];
   var rental;
+  var exitRental;
   var string = new String();
   for(var  i = 0; i < ids.length; i++) {
     string = '';
     rental = retriveObject(ids[i])
     if(rental != null) {
-      rental.forEach(function(element, index) {
-          string += ((index == 0? ' ': ', ') + element.type + element.letter)
-          });
-     rental = {id: ids[i], bikes: string};
-     rentals.push(rental);
+      for(var b = 0; b < rental.length; b++)
+          string += ((b == 0? ' ': ', ') + rental[b].type + rental[b].letter)
+     exitRental = {id: ids[i], bikes: string};
+     rentals.push(exitRental);
   }
   }
   return rentals;
