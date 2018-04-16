@@ -396,7 +396,7 @@ function hardReset() {
   resetList();
   setUp();
 }
-function colorPotential(bikeID, rack, name, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
+function findPotential(bikeID, rack, name, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
   Logger.log(bikeID);
   if(!rack) {
@@ -417,7 +417,7 @@ function colorPotential(bikeID, rack, name, endDate, hasRez) //desired bike, nam
   if(startID !== -1) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('reservations');
     var totalArea = sheet.getRange(startID + bikes[0] + ':' + endID + bikes[bikes.length - 1]);
-    totalArea.setBackgroundRGB(0, 0, 255);
+    //totalArea.setBackgroundRGB(0, 0, 255);
     var vals = totalArea.getValues();
     var row;
     var o = 0, d = 0;
@@ -448,7 +448,7 @@ function colorPotential(bikeID, rack, name, endDate, hasRez) //desired bike, nam
       return "Conflict";
     }
     var chosenArea = sheet.getRange(startID + bikes[o] + ':' + endID + bikes[o]);
-    chosenArea.setBackgroundRGB(0, 255, 0);
+    //chosenArea.setBackgroundRGB(0, 255, 0);
     return chosenArea;
   }
 }
@@ -466,7 +466,7 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
   }
   for(var i = 0; i < bikes.length; i++) {
     Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
-    x[i] = colorPotential(bikes[i].type, bikes[i].rack, name, endDate, false)
+    x[i] = findPotential(bikes[i].type, bikes[i].rack, name, endDate, false)
     if (x[i] === "Conflict") {
       conflicts.push(bikes[i].type + bikes[i].letter);
       }
