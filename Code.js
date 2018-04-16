@@ -158,8 +158,7 @@ function onEdit(e) {
          Logger.log("letter: " + split[1]);
          Logger.log("rack: " + (split[2] ? "True" : "False"));
          var bike = {type: split[0], letter: split[1], rack: (split[2] ? true : false)};
-         storeObject((id + "n"), bike);
-	       storeObject(id,raw);
+         storeObject((id), bike);
          sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
          }
        } else {
@@ -266,7 +265,7 @@ function getNextRentals() {
     rental = retriveObject(ids[i])
     if(rental != null) {
       rental.forEach(function(element, index) {
-          string += ((index == 0? ' ': ', ') + element)
+          string += ((index == 0? ' ': ', ') + element.type + element.letter)
           });
      rental = {id: ids[i], bikes: string};
      rentals.push(rental);
@@ -444,22 +443,22 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
   var endDate = new Date()
   endDate.setMonth(parseInt(date.split('-')[1]) - 1)
   endDate.setDate(date.split('-')[2])
-  var x = [];
-  var conflicts = [];
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals")
-  var bikes = [];
+  var x = [];  //holds ranges for each bike
+  var conflicts = []; //holds conflicts
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rezervations")
+  var bikes = []; //holds bike objects
   for(var i = 0; i < id.length; i++) {
     bikes.push.apply(bikes , retriveObject(id[i]));
   }
   for(var i = 0; i < bikes.length; i++) {
-    x[i] = colorPotential(bikes[i], name, endDate, false)
+    x[i] = colorPotential(bikes[i].type, name, endDate, false)
     if (x[i] === "Conflict") {
-      conflicts.push(bikes[i])
+      conflicts.push(bikes[i].type + bikes[i].type);
       }
   }
   if (conflicts.length == 0) {
     for(var i = 0; i < bikes.length; i ++) {
-      x[i].setValues(writeName(name,x[i].getA1Notation()))
+      x[i].setValues(writeName(bikes[i].letter + ":" + name,x[i].getA1Notation()))
     }
     for(var i = 0; i < id.length; i++)
       PropertiesService.getScriptProperties().deleteProperty(id[i])
