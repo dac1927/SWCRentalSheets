@@ -396,12 +396,21 @@ function hardReset() {
   resetList();
   setUp();
 }
-function colorPotential(bikeID, name, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
+function colorPotential(bikeID, rack, name, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
-  var bikes = retriveObject(bikeID);                   //retriving potential area w/o rack
-  var wRack = retriveObject(bikeID + "R");             //retriving potential area w/ rack
-  if(wRack != null)                                    //if theres space with rack, add to the end of possibilites
-    bikes.concat(wRack);
+  Logger.log(bikeID);
+  if(!rack) {
+    var bikes = retriveObject(bikeID);                    //retriving potential area w/o rack
+    if (bikes === null)
+      Logger.log("BIKE DOESN'T EXIST");
+    var wRack = retriveObject(bikeID + "R");              //retriving potential area w/ rack
+    if(wRack !== null && bikes !== null)   //if theres space with rack, add to the end of possibilites
+      bikes.concat(wRack); 
+    else                                   //if the bike only exists w/rack, avoid concat with assignment
+      bikes = wRack;
+  }
+  else
+    var bikes = retriveObject(bikeID + "R")            
   var today = new Date();
   var startID = findColumn(today);
   var endID = findColumn(endDate);
@@ -456,9 +465,10 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
     bikes.push.apply(bikes , retriveObject(id[i]));
   }
   for(var i = 0; i < bikes.length; i++) {
-    x[i] = colorPotential(bikes[i].type, name, endDate, false)
+    Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
+    x[i] = colorPotential(bikes[i].type, bikes[i].rack, name, endDate, false)
     if (x[i] === "Conflict") {
-      conflicts.push(bikes[i].type + bikes[i].type);
+      conflicts.push(bikes[i].type + bikes[i].letter);
       }
   }
   if (conflicts.length == 0) {
