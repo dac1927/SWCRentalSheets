@@ -85,6 +85,31 @@ function setUp() {
     colorToday();
 
 }
+//functions with auto triggers
+function onOpen() {
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .createMenu('Rental Tools')
+      .addItem('Show Rental Tools', 'showRentalSidebar')
+      .addItem('Show Reservation Tools', 'showReservationSidebar')
+      .addToUi();
+}
+
+function showRentalSidebar() {
+  var html = HtmlService.createHtmlOutputFromFile('side')
+      .setTitle('Rental Tools')
+      .setWidth(300);
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .showSidebar(html);
+}
+function showReservationSidebar() {
+  var html = HtmlService.createHtmlOutputFromFile('rezside')
+      .setTitle('Reservation Tools')
+      .setWidth(300);
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .showSidebar(html);
+}
+//end of setup!
+//INGEST ##################################################################################################################################################
 function onEdit(e) {
    var sheet = SpreadsheetApp.getActiveSheet();
    if (sheet.getName() == "input" && sheet.getActiveRange().getColumn() == 1) {
@@ -130,9 +155,9 @@ function onEdit(e) {
          raw = b.getValues().join().split(',').filter(Boolean);//FINISH THIS STUFF
          rack = (raw.matches(".*(-R)") ? "-R" : "");
          stripped = raw.replace('-R','');
-	 letter = stripped.match(/^.*[A-J]$/);//id letter
+	       letter = stripped.match(/^.*[A-J]$/);//id letter
          Logger.log(letter);
-	 storeObject(id,raw);
+	       storeObject(id,raw);
          sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
          }
        } else {
@@ -142,36 +167,12 @@ function onEdit(e) {
     }
   }
 }
-//setting up UI
-function onOpen() {
-  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
-      .createMenu('Rental Tools')
-      .addItem('Show Rental Tools', 'showRentalSidebar')
-      .addItem('Show Reservation Tools', 'showReservationSidebar')
-      .addToUi();
-}
-
-function showRentalSidebar() {
-  var html = HtmlService.createHtmlOutputFromFile('side')
-      .setTitle('Rental Tools')
-      .setWidth(300);
-  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
-      .showSidebar(html);
-}
-function showReservationSidebar() {
-  var html = HtmlService.createHtmlOutputFromFile('rezside')
-      .setTitle('Reservation Tools')
-      .setWidth(300);
-  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
-      .showSidebar(html);
-}
-//end of setup!
 //class descriptions?
 function Bike(idInput) {
   var id = idInput;
   var position = findRow('rental',idInput);
 }
-//lower level functions!
+//lower level functions! #################################################################################################################################
 function findColumn(dateInput) {
     var b;
     return (b = PropertiesService.getScriptProperties().getProperty(dateFormat(dateInput))) === 'undefined' ? -1:b;
@@ -244,6 +245,7 @@ function nextEmptyCell(range) {
   }
   return (ct+1);
 }
+//fcns for sidebars ################################################################################################################################
 function guid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
