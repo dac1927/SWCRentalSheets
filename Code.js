@@ -195,7 +195,7 @@ PropertiesService.getScriptProperties().setProperty(name, JSON.stringify(myObjec
 }
 function retriveObject(name) {
   var b;
-  return JSON.parse((b = PropertiesService.getScriptProperties().getProperty(name)) === 'undefined'? 'null':b);
+  return JSON.parse((b = PropertiesService.getScriptProperties().getProperty(name)) === undefined? null:b);
 }
 function isBikeId(idInput) {
   if (isNaN(idInput.charAt(1))  && isNaN(idInput.charAt(2)) || idInput == undefined) {
@@ -335,8 +335,13 @@ function deleteRental(ids) { //deletes the specified rental
 //these functions revolve around splitting up a rental
 function splitRentalsDialog(ids) { //creates dialog
   var bikes = [];
+  var bike;
   for(var i = 0; i < ids.length; i++) {
-  bikes.push.apply(bikes , retriveObject(ids[i]));
+    bike = retriveObject(ids[i]);
+    if(!bike)
+      return;
+    Logger.log(bike.type);
+    bikes.push.apply(bikes , bike);
   }
   storeObject('splitBikes', bikes);
   storeObject('splitBikeIDs', ids)

@@ -9,7 +9,8 @@
   var labels = document.getElementsByName('checktext')
   for(var i = 0; i < divs.length; i++) {
     if(bikes[i] != null ) {
-      labels[i].innerHTML = bikes[i];
+      labels[i].innerHTML = bikes[i].type + bikes[i].letter;
+      labels[i].setAttribute('bikeObj',JSON.stringify(bike[i]))
     }
     else {
      divs[i].style.display = 'none';
@@ -24,10 +25,10 @@
   var bikes = {checked: [], unchecked: []};
   for(var i = 0; i < checks.length; i++) {
       if (checks[i].checked) {
-         bikes.checked[bikes.checked.length] = labels[i].innerHTML;
+         bikes.checked[bikes.checked.length] = JSON.parse(labels[i].getAttribute('bikeObj'));
       }
-      else if (divs[i].style.display != 'none'){
-         bikes.unchecked[bikes.unchecked.length] = labels[i].innerHTML;
+      else if (divs[i].style.display != 'none') {
+         bikes.unchecked[bikes.unchecked.length] = JSON.parse(labels[i].getAttribute('bikeObj'));
       }
   }
   google.script.run.withSuccessHandler(onSplit).withFailureHandler(function(msg,element){window.alert("failed"); }).createSplitRentals(bikes)
