@@ -153,7 +153,7 @@ function onEdit(e) {
          idList.push(id);
          storeObject("IDLIST",idList);
          raw = b.getValues().join().split(',').filter(Boolean);//FINISH THIS STUFF
-         rack = (raw.matches(".*(-R)") ? "-R" : "");
+         rack = (raw[0].matches(".*(-R)") ? "-R" : "");
          stripped = raw.replace('-R','');
 	       letter = stripped.match(/^.*[A-J]$/);//id letter
          Logger.log(letter);
