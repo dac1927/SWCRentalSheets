@@ -90,6 +90,9 @@ function splitRental() {
       if (checks[i].checked) {
          ids[ids.length] = labels[i].getAttribute('rentalid');
       }
+      if (checks[i].unchecked) {
+         ids[ids.length] = labels[i].getAttribute('rentalid');
+      }
     }
    google.script.run.withSuccessHandler(onSplit).withFailureHandler(function(msg,element){window.alert("failed"); }).splitRentalsDialog(ids)
    function onSplit(completed) {

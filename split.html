@@ -3,14 +3,16 @@
 <html>
   <script>
   google.script.run.withSuccessHandler(load).withFailureHandler(function(msg,element){window.alert("failed"); }).getBikes();
-  function load(bikes) {
+  function load(bikesIds) {
   var main = document.getElementById('main');
   var divs = document.getElementsByName('check');
   var labels = document.getElementsByName('checktext')
+  var bikes = bikesIds.bikes;
+  var ids = bikesIds.ids;
   for(var i = 0; i < divs.length; i++) {
-    if(bikes[i] != null ) {
+    if(i < ids.length) {
       labels[i].innerHTML = bikes[i].type + bikes[i].letter;
-      labels[i].setAttribute('bikeObj',JSON.stringify(bike[i]))
+      labels[i].setAttribute('bId', ids[i]);
     }
     else {
      divs[i].style.display = 'none';
@@ -25,10 +27,10 @@
   var bikes = {checked: [], unchecked: []};
   for(var i = 0; i < checks.length; i++) {
       if (checks[i].checked) {
-         bikes.checked[bikes.checked.length] = JSON.parse(labels[i].getAttribute('bikeObj'));
+         bikes.checked[bikes.checked.length] = labels[i].getAttribute('bId');
       }
       else if (divs[i].style.display != 'none') {
-         bikes.unchecked[bikes.unchecked.length] = JSON.parse(labels[i].getAttribute('bikeObj'));
+         bikes.unchecked[bikes.unchecked.length] = labels[i].getAttribute('bID');
       }
   }
   google.script.run.withSuccessHandler(onSplit).withFailureHandler(function(msg,element){window.alert("failed"); }).createSplitRentals(bikes)

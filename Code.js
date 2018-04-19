@@ -1,6 +1,9 @@
 //TODO line 128~
 //get checked: var isChecked = document.getElementById('id_of_checkbox').checked; 
 //setup for the spreadsheet, mostly script properties
+function test() {
+  hardReset();
+}
 function setUp() {
     onOpen();
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals");
@@ -336,38 +339,56 @@ function deleteRental(ids) { //deletes the specified rental
 function splitRentalsDialog(ids) { //creates dialog
   var bikes = [];
   var bike;
+  var g = "";
+  var idList = [];
+  var bIdO = [];
   for(var i = 0; i < ids.length; i++) {
     bike = retriveObject(ids[i]);
-    if(!bike)
-      return;
-    Logger.log(bike.type);
-    bikes.push.apply(bikes , bike);
+    bikes = bikes.concat(bike);
   }
-  storeObject('splitBikes', bikes);
-  storeObject('splitBikeIDs', ids)
+  for(var i = 0; i < bikes.length; i++) {
+    g = guid();
+    idList.push(g);
+    bIdO.push(bikes[i]);
+  }
+  storeObject('splitRIds', ids);
+  storeObject('splitBikes', {ids: idList, bikes: bIdO});
   var ui = SpreadsheetApp.getUi()
   var html = HtmlService.createHtmlOutputFromFile('split')
   ui.showModalDialog(html, 'Split bikes')
 }
 function getBikes() {  //is called in script to get the bikes in question
-  return retriveObject('splitBikes');
+  var b = retriveObject('splitBikes');
+  Logger.log(b.ids);
+  return b;
 }
 function createSplitRentals(rentals) { //performs the split
-  var id1 = guid();
+  var id1 = guid();                    //new ids for the new rentals
   var id2 = guid();
-  var r1 = rentals.checked;
-  var r2 =  rentals.unchecked;
+  var bIdO = retriveObject('splitBikes'); //retrive the bikes and their special ids
+  var r1 = [];                        //new rental 1
+  var r2 =  [];                       //new rental 2
+  for(var i = 0; i < rentals.checked.length; i++ ) { //adding bikes to r1 using ids marked checked
+    r1.push(bIdO.bikes[bIdO.ids.indexOf(rentals.checked[i])]);
+  }
+  for(var i = 0; i < rentals.unchecked.length; i++ ) {//adding bikes to r2 using ids marked unchecked
+    r2.push(bIdO.bikes[bIdO.ids.indexOf(rentals.unchecked[i])]);
+  }
   var idList = retriveObject('IDLIST');
-  var oldIds = retriveObject('splitBikeIDs')
-  idList[idList.indexOf(oldIds[0])] = 'DELETE' 
-  idList[idList.indexOf(oldIds[1])] = 'DELETE'
+  var oldIds = retriveObject('splitRIds');
+  for(var i = 0; i < oldIds.length; i++) {
+    idList[idList.indexOf(oldIds[i])] = 'DELETE';
+    PropertiesService.getScriptProperties().deleteProperty(oldIds[0]).deleteProperty(oldIds[1]);
+  } 
   idList = idList.filter(function(n){return n != 'DELETE'});
+  Logger.log(idList);
   idList.push(id1);
   idList.push(id2);
   storeObject('IDLIST', idList);
-  storeObject(id1, r1)
-  storeObject(id2, r2)
-  PropertiesService.getScriptProperties().deleteProperty(oldIds[0]).deleteProperty(oldIds[1]);
+  Logger.log(r1);
+  Logger.log(r2);
+  storeObject(id1, r1);
+  storeObject(id2, r2);
   showRentalSidebar();
   return true;
 }
@@ -493,7 +514,4 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
    ui.alert("Conflicts with bike" + (conflicts.length > 1? "s":"") + ":" + string)
    return false;
   }
-}
-function test() {
-      hardReset();
 }
