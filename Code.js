@@ -274,7 +274,7 @@ function getNextRentals() {
     rental = retriveObject(ids[i])
     if(rental != null) {
       for(var b = 0; b < rental.length; b++)
-          string += ((b == 0? ' ': ', ') + rental[b].type + rental[b].letter)
+          string += ((b == 0? ' ': ', ') + rental[b].type + rental[b].letter + (rental[b].rack ? '-R': ''))
      exitRental = {id: ids[i], bikes: string};
      rentals.push(exitRental);
   }
