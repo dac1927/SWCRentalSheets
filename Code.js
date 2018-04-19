@@ -26,26 +26,9 @@ function setUp() {
     var rowDict = {String : String};         //dictionary for row labels
     var temp;
     var columnKeyStringArray = sheet.getRange('rentals!A1:' + columnToLetter(sheet.getLastColumn()) + '1').getValues().join().split(','); //retrive the rental's x-keys
-    var rowKeyStringArray = sheet.getRange('rentals!A1:' + 'A' + sheet.getLastRow()).getValues().join().split(',');       //retrive the rental's y-keys
     var BreakException = {};
-      for(i = 0; i < rowKeyStringArray.length; i++) {              //entering key-value pairs for rental bikes on rental sheet
-        if (rowKeyStringArray[i] != "" && rowKeyStringArray[i] != undefined && rowKeyStringArray[i] != null) { // the cell isn't empty
-           if (rowDict[rowKeyStringArray[i]] != undefined) {
-               var result = ui.alert('Bike ID duplicate of "' + String(rowKeyStringArray[i]) + '" : Please fix and Reload the spreadsheet.',
-               ui.ButtonSet.OK_CANCEL);
-               if (result.OK || result.CANCEL || result.CLOSE) {
-                  break;
-               }
-            }
-            rowDict[rowKeyStringArray[i]] = String((i + 1).toFixed(0));
-          }
-    }
-    rowKeyStringArray.forEach(function(item, index) {
-                                                        rowDict[item] = index + 1;
-                                                     })
-    PropertiesService.getScriptProperties().setProperties(rowDict);
-    var rezsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("reservations");
-    var rezRowArray = rezsheet.getRange('reservations!A1:' + 'A' + rezsheet.getLastRow()).getValues().join().split(',');
+    var rezsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals");
+    var rezRowArray = rezsheet.getRange('rentals!A1:' + 'A' + rezsheet.getLastRow()).getValues().join().split(',');
     var rezRowDict = {};
     for(i = 0; i < rezRowArray.length; i++) {
        if (rezRowArray[i] != "" && rezRowArray[i] != undefined && rezRowArray[i] != null) {
@@ -93,20 +76,12 @@ function onOpen() {
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .createMenu('Rental Tools')
       .addItem('Show Rental Tools', 'showRentalSidebar')
-      .addItem('Show Reservation Tools', 'showReservationSidebar')
       .addToUi();
 }
 
 function showRentalSidebar() {
   var html = HtmlService.createHtmlOutputFromFile('side')
       .setTitle('Rental Tools')
-      .setWidth(300);
-  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
-      .showSidebar(html);
-}
-function showReservationSidebar() {
-  var html = HtmlService.createHtmlOutputFromFile('rezside')
-      .setTitle('Reservation Tools')
       .setWidth(300);
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .showSidebar(html);
@@ -232,9 +207,6 @@ function letterToColumn(letter)
   }
   return column;
 }
-function getRentalRange(sheet, startDate, endDate, bikeInput) {
-  return sheet.getRange('rentals!' + String(findColumn(startDate)) + String(findRow('rental',bikeInput)) + ':' + String(findColumn(endDate)) + String(findRow('rental',bikeInput)));
-}
 function getRangeLength(a1Input){
   a1Input = a1Input.replace(/[^\D]/g, '');  //filtering out numbers
   letters = a1Input.split(':');
@@ -282,42 +254,6 @@ function getNextRentals() {
   return rentals;
 }
 //functions related to user-facing GUI:
-function finishRentalOld(name, date, id) { ///finishes the rental with the given info
-  var today = new Date();
-  var endDate = new Date()
-  endDate.setMonth(parseInt(date.split('-')[1]) - 1)
-  endDate.setDate(date.split('-')[2])
-  var x = [];
-  var conflicts = [];
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals")
-  var bikes = [];
-  for(var i = 0; i < id.length; i++) {
-  bikes.push.apply(bikes , retriveObject(id[i]));
-  }
-  for(var i = 0; i < bikes.length; i++) {
-    x[i] = getRentalRange(sheet, today, endDate, bikes[i])
-    if (!x[i].isBlank()) {
-      conflicts.push(bikes[i])
-      }
-  }
-  if (conflicts.length == 0) {
-    for(var i = 0; i < bikes.length; i ++) {
-      x[i].setValues(writeName(name,x[i].getA1Notation()))
-    }
-    for(var i = 0; i < id.length; i++)
-      PropertiesService.getScriptProperties().deleteProperty(id[i])
-    return true;
-  }
-  else {
-   var ui = SpreadsheetApp.getUi()
-   var string = new String();
-   conflicts.forEach(function(element){
-               string += (" " + element);
-             })
-   ui.alert("Conflicts with bike" + (conflicts.length > 1? "s":"") + ":" + string)
-   return false;
-  }
-}
 function deleteRental(ids) { //deletes the specified rental
   var ui = SpreadsheetApp.getUi();
   var response = ui.alert("Are you sure you want to delete these rentals?", ui.ButtonSet.YES_NO);
@@ -399,8 +335,6 @@ function colorToday() {
   if (columnID != -1) {
     var rental = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals").getRange(columnID + ':' + columnID); //undefined, undefined
     rental.setBackgroundRGB(144, 206, 162);
-    var rez = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('reservations').getRange(columnID + ':' + columnID);
-    rez.setBackgroundRGB(144, 206, 162);
     if (SpreadsheetApp.getActiveSheet().getName() !== "input") {
       rental.activate();
       rez.activate();
@@ -441,7 +375,7 @@ function findPotential(bikeID, rack, name, endDate, hasRez) //desired bike, name
   var startID = findColumn(today);
   var endID = findColumn(endDate);
   if(startID !== -1) {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('reservations');
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('rentals');
     var totalArea = sheet.getRange(startID + bikes[0] + ':' + endID + bikes[bikes.length - 1]);
     //totalArea.setBackgroundRGB(0, 0, 255);
     var vals = totalArea.getValues();
