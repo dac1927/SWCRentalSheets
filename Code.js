@@ -377,7 +377,8 @@ function findPotential(bike, name, endDate, hasRez) //desired bike, name on rent
     var row;
     var unused = true;
     var o = 0, d = 0;
-    var regex = new RegExp('^' + bike.letter + '.*:' + '$');
+    var option = -1;
+    var regex = new RegExp('^' + bike.letter + ':.*' + '$');
     if (hasRez) {
       var rez = false;
       for(; o < vals.length && unused; o++) { // while more to check and && rez not found
@@ -393,23 +394,26 @@ function findPotential(bike, name, endDate, hasRez) //desired bike, name on rent
       }
     } else {
       var flag = false;
-      for(; o < vals.length && unused; o++) { // while more to check and && rez not found
+      for(; o < vals.length && unused; o++) { // while more to check and && bike's letter hasn't been spotted
         flag = true;
-        for(d = 0; d < vals[o].length && flag; d++) {  //while more to check && rez is found
+        for(d = 0; d < vals[o].length && flag; d++) {  //while more to check && the cells are empty, keep checking row
           if (!(vals[o][d] === "")) { //if cell isn't empty , set to false
             flag = false;
-            if (vals[o][d].match(regex))
+            if (vals[o][d].match(regex)) {
               unused = false;
+              Logger.log("Bike's ID has been found");
+            }
           }
         }
-        if(flag === true)
-          break;
+        if(flag === true && option === -1)  //if the current row works, and a row hasn't been picked yet
+          option = o;
       }
     }
     if(flag === false || unused === false) {
       return "Conflict";
     }
-    var chosenArea = sheet.getRange(startID + bikes[o] + ':' + endID + bikes[o]);
+    Logger.log("option: " + option);
+    var chosenArea = sheet.getRange(startID + bikes[option] + ':' + endID + bikes[option]);
     //chosenArea.setBackgroundRGB(0, 255, 0);
     return chosenArea;
   }
