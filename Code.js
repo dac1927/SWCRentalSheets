@@ -135,9 +135,6 @@ function onEdit(e) {
          var bikeTemp;
          for(var a = 0; a < raw.length; a++) {
             split = raw[a].split(/:|-/);    //splitting id into it's components
-            Logger.log("Bike type/size: " + split[0]);
-            Logger.log("letter: " + split[1]);
-            Logger.log("rack: " + (split[2] ? "True" : "False"));
             bikeTemp = {type: split[0], letter: split[1], rack: (split[2] ? true : false)};
             bikeList.push(bikeTemp); //adding the bike to the list
          }
@@ -295,7 +292,6 @@ function splitRentalsDialog(ids) { //creates dialog
 }
 function getBikes() {  //is called in script to get the bikes in question
   var b = retriveObject('splitBikes');
-  Logger.log(b.ids);
   return b;
 }
 function createSplitRentals(rentals) { //performs the split
@@ -317,12 +313,9 @@ function createSplitRentals(rentals) { //performs the split
     PropertiesService.getScriptProperties().deleteProperty(oldIds[0]).deleteProperty(oldIds[1]);
   } 
   idList = idList.filter(function(n){return n != 'DELETE'});
-  Logger.log(idList);
   idList.push(id1);
   idList.push(id2);
   storeObject('IDLIST', idList);
-  Logger.log(r1);
-  Logger.log(r2);
   storeObject(id1, r1);
   storeObject(id2, r2);
   showRentalSidebar();
@@ -356,61 +349,71 @@ function hardReset() {
   resetList();
   setUp();
 }
-function findPotential(bikeID, rack, name, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
+function findPotential(bike, name, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
-  Logger.log(bikeID);
-  if(!rack) {
-    var bikes = retriveObject(bikeID);                    //retriving potential area w/o rack
-    if (bikes === null)
-      Logger.log("BIKE DOESN'T EXIST");
-    var wRack = retriveObject(bikeID + "R");              //retriving potential area w/ rack
+  Logger.log(bike.type);
+  var bikes = null;
+  if(!(bike.rack)) {
+    bikes = retriveObject(bike.type);                    //retriving potential area w/o rack
+    var wRack = retriveObject(bike.type + "R");              //retriving potential area w/ rack
+    Logger.log("no rack" + bikes + " rack" + wRack);
     if(wRack !== null && bikes !== null)   //if theres space with rack, add to the end of possibilites
       bikes.concat(wRack); 
-    else                                   //if the bike only exists w/rack, avoid concat with assignment
+    else if(bikes === null)                                  //if the bike only exists w/rack, avoid concat with assignment
       bikes = wRack;
   }
   else
-    var bikes = retriveObject(bikeID + "R")            
+    bikes = retriveObject(bike.type + "R")     
+  if(bikes === null)
+    Logger.log("BIKE DOESN'T EXIST");       
   var today = new Date();
   var startID = findColumn(today);
   var endID = findColumn(endDate);
-  if(startID !== -1) {
+  if(startID !== -1 && bikes !== null) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('rentals');
     var totalArea = sheet.getRange(startID + bikes[0] + ':' + endID + bikes[bikes.length - 1]);
     //totalArea.setBackgroundRGB(0, 0, 255);
     var vals = totalArea.getValues();
     var row;
+    var unused = true;
     var o = 0, d = 0;
+    var regex = new RegExp('^' + bike.letter + '.*:' + '$');
     if (hasRez) {
       var rez = false;
-      for(; o < vals.length; o++) { // while more to check and && rez not found
+      for(; o < vals.length && unused; o++) { // while more to check and && rez not found
         rez = true;
         for(d = 0; d < vals[o].length && rez; d++) {  //while more to check && rez is found
           if (!(vals[o][d] === name))  //if cell isn't a rez, set to false
             rez = false;
+          if(!(vals[o][d] === "") && !(vals[o][d].match(regex)))
+            unused = false;
         }
         if(rez === true)
           break;
       }
     } else {
       var flag = false;
-      for(; o < vals.length; o++) { // while more to check and && rez not found
+      for(; o < vals.length && unused; o++) { // while more to check and && rez not found
         flag = true;
         for(d = 0; d < vals[o].length && flag; d++) {  //while more to check && rez is found
-          if (!(vals[o][d] === ""))  //if cell isn't empty , set to false
+          if (!(vals[o][d] === "")) { //if cell isn't empty , set to false
             flag = false;
+            if (vals[o][d].match(regex))
+              unused = false;
+          }
         }
         if(flag === true)
           break;
       }
     }
-    if(flag === false) {
+    if(flag === false || unused === false) {
       return "Conflict";
     }
     var chosenArea = sheet.getRange(startID + bikes[o] + ':' + endID + bikes[o]);
     //chosenArea.setBackgroundRGB(0, 255, 0);
     return chosenArea;
   }
+  return "Conflict";
 }
 function finishRental(name, date, id) { ///finishes the rental with the given info
   var today = new Date();
@@ -426,17 +429,22 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
   }
   for(var i = 0; i < bikes.length; i++) {
     Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
-    x[i] = findPotential(bikes[i].type, bikes[i].rack, name, endDate, false)
+    x[i] = findPotential(bikes[i], name, endDate, false);
     if (x[i] === "Conflict") {
       conflicts.push(bikes[i].type + bikes[i].letter);
       }
   }
   if (conflicts.length == 0) {
-    for(var i = 0; i < bikes.length; i ++) {
-      x[i].setValues(writeName(bikes[i].letter + ":" + name,x[i].getA1Notation()))
+    for(var i = 0; i < x.length; i ++) {
+      x[i].setValue(bikes[i].letter + ":" + name);
     }
-    for(var i = 0; i < id.length; i++)
-      PropertiesService.getScriptProperties().deleteProperty(id[i])
+    var idList = retriveObject('IDLIST');
+    for(var i = 0; i < id.length; i++) {
+      PropertiesService.getScriptProperties().deleteProperty(id[i]);
+      idList[idList.indexOf(id[i])] = 'DELETE';
+    }
+    idList = idList.filter(function(n){return n != 'DELETE'});
+    storeObject('IDLIST', idList)
     return true;
   }
   else {

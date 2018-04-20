@@ -100,13 +100,19 @@ function splitRental() {
      reload();
    } 
 }
+document.getElementById("select").onchange = function() {
+   if(this.value === "1")
+      document.getElementById("complete").style.display = 'block';
+   else
+   document.getElementById("complete").style.display = 'none';
+};
 </script>
 <div class="sidebar branding-below" id = 'main' style="display:none;">
 <label for = 'checks'>Unfinished Rentals:</label>
   <div id = 'checks'>
   <div name = 'check'>
     <input type="checkbox" id="checkbox1" name = 'checkbox'>
-    <label for="checkbox1" name = 'checktext'></label>
+    <label for="checkbox1" name = 'checktext'>None.</label>
   </div>
   <div name = 'check'>
     <input type="checkbox" id="checkbox2" name = 'checkbox'>
@@ -145,21 +151,23 @@ function splitRental() {
     <label for="checkbox10" name = 'checktext'></label>
   </div>
   </div>
-  <label for = 'date'>End date:</label>
-  <div class="block" id = 'date'>
-    <input type = 'date' id = 'dateinput'>
-  </div>
+  <div id = "complete">
+    <label for = 'date'>End date:</label>
+    <div class="block" id = 'date'>
+      <input type = 'date' id = 'dateinput'>
+    </div>
     <label for = 'name'>Rental Name:</label>
-  <div class="block" id = 'name'>
-    <input type = 'text' id = 'nameinput'>
+    <div class="block" id = 'name'>
+      <input type = 'text' id = 'nameinput'>
+    </div>
   </div>
   <div class="block form-group">
     <label for="select">Select:</label>
     <select id="select">
-      <option selected>Finish Rentals</option>
-      <option>Split Rentals</option>
-      <option>Delete Rentals</option>
-      <option>Reload Rentals</option>
+      <option value = "1" selected>Finish Rentals</option>
+      <option value = "2">Split Rentals</option>
+      <option value = "2">Delete Rentals</option>
+      <option value = "2">Reload Rentals</option>
     </select>
   </div>
   <div class = "block">
