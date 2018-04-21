@@ -2,7 +2,9 @@
 //get checked: var isChecked = document.getElementById('id_of_checkbox').checked; 
 //setup for the spreadsheet, mostly script properties
 function test() {
-  hardReset();
+  var ui = SpreadsheetApp.getUi()
+  var html = HtmlService.createHtmlOutputFromFile('rez')
+  ui.showModalDialog(html, 'Reservation Form')
 }
 function setUp() {
     onOpen();
