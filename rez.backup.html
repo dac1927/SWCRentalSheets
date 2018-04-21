@@ -5,24 +5,22 @@
 <style>
 * {
   box-sizing: border-box;
+  overflow: hide;
 }
 
 body {
   background-color: #f1f1f1;
   margin: 0px;
-  width: 100%;
-  height: 100%;
 }
-tab {
-  width: 100%;
-  height: 100%;
-}
+
 #regForm {
   background-color: #ffffff;
   font-family: Raleway;
-  padding: 10px;
-  width: 100%;
-  height: 100%
+  padding: 2vmin;
+  width:100vw;
+  max-width:100%;
+  height:100vh;
+  max-height:100%;
 }
 
 h1 {
@@ -31,24 +29,26 @@ h1 {
 
 input {
   padding: 10px;
-  width: 100%;
   font-size: 17px;
   border: 1px solid #aaaaaa;
 }
 
 /* Mark input boxes that gets an error on validation: */
 input.invalid {
-  background-color: #ffdddd;
+  background-color: px#ffdddd;
 }
 
 /* Hide all steps by default: */
 .tab {
   display: none;
-  min-height:100%;
+  padding: 10px;
+  width:100%;
+  height:80%;
 }
-
+h2 { 
+    margin:0vmin;
+}
 button {
-
   border: none;
 }
 
@@ -83,9 +83,14 @@ button:hover {
 .step.unfinished {
   background-color: #ff3300;
 }
+.b-button {
+	height: 15vh;
+    position:absolute;
+    bottom: 5%;
+}
 </style>
 <body>
-<div style = "background-color: #ffffff; width: 100%; height:auto">
+<div style = "background-color: #ffffff;">
 <form id="regForm" action="/action_page.php">
   <!-- One "tab" for each step in the form: -->
   <div class="tab">
@@ -109,19 +114,19 @@ button:hover {
     <p><input placeholder="Username..." oninput="this.className = ''" name="uname"></p>
     <p><input placeholder="Password..." oninput="this.className = ''" name="pword" type="password"></p>
   </div>
-  <div >
-    <div class= "block" style="float:right;">
+  <div class= "b-bottom">
+     <div class= "block" style="float:right;">
       <button class = "gray" type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
       <button class="blue" type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+     </div>
+         <!-- Circles which indicates the steps of the form: -->
+  	 <div style="text-align:left;margin-top: 5%;margin-left: 3%; margin-bottom:3%;">
+    	<span class="step"></span>
+    	<span class="step"></span>
+    	<span class="step"></span>
+    	<span class="step"></span>
+     </div>
     </div>
-  </div>
-  <!-- Circles which indicates the steps of the form: -->
-  <div style="text-align:left;margin-top: 5%;margin-left: 3%; margin-bottom:3%;">
-    <span class="step"></span>
-    <span class="step"></span>
-    <span class="step"></span>
-    <span class="step"></span>
-  </div>
 </form>
 <div>
 <script>
