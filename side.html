@@ -11,11 +11,11 @@
 <script>
 reload();
 function reload() {
-google.script.run.withSuccessHandler(loadRental)
+  google.script.run.withSuccessHandler(loadRental)
     .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
 }
 function performAction() {
-  var select = document.getElementById('select')
+  var select = document.getElementById('select');
   switch(select.selectedIndex) {
     case 0:
         enterRental();
@@ -27,11 +27,15 @@ function performAction() {
         deleteRental();
         break;
     case 3:
-        reload();
+        reloadAll();
         break;
     default:
         window.alert("Selection doesn't exist");
   }
+}
+function reloadAll() {
+  reload()
+  document.getElementById('mainForm').reset();
 }
 function loadRental(rentals) {
   var main = document.getElementById('main');
@@ -47,6 +51,7 @@ function loadRental(rentals) {
       divs[i].style.display = 'block';
     }
   }
+  document.getElementById("f1u").style.display = 'none';
   main.style.display = 'block';
 }
 function enterRental() {
@@ -100,79 +105,90 @@ function splitRental() {
      reload();
    } 
 }
-document.getElementById("select").onchange = function() {
-   if(this.value === "1")
-      document.getElementById("complete").style.display = 'block';
-   else
-   document.getElementById("complete").style.display = 'none';
+document.onreadystatechange = function() {
+  if (document.readyState === 'complete') {
+    fn();
+  }
 };
+function fn() {
+  document.getElementById('select').onchange = function(e) {
+   if(this.selectedIndex === 0)
+      document.getElementById('f1u').style.display = 'block';
+   else
+      document.getElementById('f1u').style.display = 'none';
+};
+}
 </script>
 <div class="sidebar branding-below" id = 'main' style="display:none;">
-<label for = 'checks'>Unfinished Rentals:</label>
-  <div id = 'checks'>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox1" name = 'checkbox'>
-    <label for="checkbox1" name = 'checktext'>None.</label>
-  </div>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox2" name = 'checkbox'>
-    <label for="checkbox2" name = 'checktext'></label>
-  </div>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox3" name = 'checkbox'>
-    <label for="checkbox3" name = 'checktext'></label>
-  </div>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox4" name = 'checkbox'>
-    <label for="checkbox4" name = 'checktext'></label>
-  </div>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox5" name = 'checkbox'>
-    <label for="checkbox5" name = 'checktext'></label>
-  </div>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox6" name = 'checkbox'>
-    <label for="checkbox6" name = 'checktext'></label>
-  </div>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox7" name = 'checkbox'>
-    <label for="checkbox7" name = 'checktext'></label>
-  </div>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox8" name = 'checkbox'>
-    <label for="checkbox8" name = 'checktext'></label>
-  </div>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox9" name = 'checkbox'>
-    <label for="checkbox9" name = 'checktext'></label>
-  </div>
-  <div name = 'check'>
-    <input type="checkbox" id="checkbox10" name = 'checkbox'>
-    <label for="checkbox10" name = 'checktext'></label>
-  </div>
-  </div>
-  <div id = "complete">
-    <label for = 'date'>End date:</label>
-    <div class="block" id = 'date'>
-      <input type = 'date' id = 'dateinput'>
+  <form id='mainForm' onsubmit="return false;">  
+    <div class="block form-group">
+        <label for="select">Select:</label>
+        <select id="select">
+          <option>Finish Rentals</option>
+          <option>Split Rentals</option>
+          <option>Delete Rentals</option>
+          <option>Reload Rentals</option>
+          <option disabled selected value style="display: none"> -- select an option -- </option>
+        </select>
+      </div>
+    <label for = 'checks'>Unfinished Rentals:</label>
+      <div id = 'checks'>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox1" name = 'checkbox'>
+          <label for="checkbox1" name = 'checktext'>None.</label>
+        </div>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox2" name = 'checkbox'>
+          <label for="checkbox2" name = 'checktext'></label>
+        </div>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox3" name = 'checkbox'>
+          <label for="checkbox3" name = 'checktext'></label>
+        </div>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox4" name = 'checkbox'>
+          <label for="checkbox4" name = 'checktext'></label>
+        </div>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox5" name = 'checkbox'>
+          <label for="checkbox5" name = 'checktext'></label>
+        </div>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox6" name = 'checkbox'>
+          <label for="checkbox6" name = 'checktext'></label>
+        </div>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox7" name = 'checkbox'>
+          <label for="checkbox7" name = 'checktext'></label>
+        </div>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox8" name = 'checkbox'>
+          <label for="checkbox8" name = 'checktext'></label>
+        </div>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox9" name = 'checkbox'>
+          <label for="checkbox9" name = 'checktext'></label>
+        </div>
+        <div name = 'check'>
+          <input type="checkbox" id="checkbox10" name = 'checkbox'>
+          <label for="checkbox10" name = 'checktext'></label>
+        </div>
+      </div>
+    <div id = "f1u">
+      <label for = 'date'>End date:</label>
+      <div class="block" id = 'date'>
+        <input type = 'date' id = 'dateinput'>
+      </div>
+      <label for = 'name'>Rental Name:</label>
+      <div class="block" id = 'name'>
+        <input type = 'text' id = 'nameinput'>
+      </div>
     </div>
-    <label for = 'name'>Rental Name:</label>
-    <div class="block" id = 'name'>
-      <input type = 'text' id = 'nameinput'>
+    <!--This is where the selector used to be -->
+    <div class = "block">
+      <button class = "blue" onclick = "performAction()">Submit</button>
     </div>
-  </div>
-  <div class="block form-group">
-    <label for="select">Select:</label>
-    <select id="select">
-      <option value = "1" selected>Finish Rentals</option>
-      <option value = "2">Split Rentals</option>
-      <option value = "2">Delete Rentals</option>
-      <option value = "2">Reload Rentals</option>
-    </select>
-  </div>
-  <div class = "block">
-    <button class = "blue" onclick = "performAction()">Submit</button>
-  </div>
+    </form>
 </div>
 <div class="sidebar bottom">
   <span class="gray">

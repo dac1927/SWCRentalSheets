@@ -298,26 +298,29 @@ function createSplitRentals(rentals) { //performs the split
   var id1 = guid();                    //new ids for the new rentals
   var id2 = guid();
   var bIdO = retriveObject('splitBikes'); //retrive the bikes and their special ids
-  var r1 = [];                        //new rental 1
-  var r2 =  [];                       //new rental 2
+  var r1 = [[],[]];                        //new rental 1  && 2
   for(var i = 0; i < rentals.checked.length; i++ ) { //adding bikes to r1 using ids marked checked
-    r1.push(bIdO.bikes[bIdO.ids.indexOf(rentals.checked[i])]);
+    r1[0].push(bIdO.bikes[bIdO.ids.indexOf(rentals.checked[i])]);
   }
   for(var i = 0; i < rentals.unchecked.length; i++ ) {//adding bikes to r2 using ids marked unchecked
-    r2.push(bIdO.bikes[bIdO.ids.indexOf(rentals.unchecked[i])]);
+    r2[1].push(bIdO.bikes[bIdO.ids.indexOf(rentals.unchecked[i])]);
   }
   var idList = retriveObject('IDLIST');
   var oldIds = retriveObject('splitRIds');
   for(var i = 0; i < oldIds.length; i++) {
     idList[idList.indexOf(oldIds[i])] = 'DELETE';
-    PropertiesService.getScriptProperties().deleteProperty(oldIds[0]).deleteProperty(oldIds[1]);
+    PropertiesService.getScriptProperties().deleteProperty(oldIds[i]);
   } 
+  PropertiesService.getScriptProperties().deleteProperty('splitBikes');
+
   idList = idList.filter(function(n){return n != 'DELETE'});
   idList.push(id1);
-  idList.push(id2);
+  storeObject(id1, r1[0]);
+  if(r1[1].length !== 0) {
+    idList.push(id2);
+    storeObject(id2, r1[1]);
+  }
   storeObject('IDLIST', idList);
-  storeObject(id1, r1);
-  storeObject(id2, r2);
   showRentalSidebar();
   return true;
 }
