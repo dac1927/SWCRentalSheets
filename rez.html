@@ -11,11 +11,11 @@
 body {
   background-color: #f1f1f1;
   margin: 0px;
+  font-size:100%;
 }
 
 #regForm {
   background-color: #ffffff;
-  font-family: Raleway;
   padding: 2vmin;
   width:100vw;
   max-width:100%;
@@ -27,10 +27,11 @@ h1 {
   text-align: center;  
 }
 
-input {
+input[type='text'],input[type='date'] {
   padding: 10px;
-  font-size: 17px;
+  font-size: 20px;
   border: 1px solid #aaaaaa;
+  width: 75vw;
 }
 
 /* Mark input boxes that gets an error on validation: */
@@ -83,56 +84,333 @@ button:hover {
 .step.unfinished {
   background-color: #ff3300;
 }
-.b-button {
-	height: 15vh;
-    position:absolute;
+.b-bottom {
+	height: 20vh;
+    position: relative;
+}
+#b-button {
+	position: absolute;
+    right: 5%;
     bottom: 5%;
+}
+#b-span {
+	position:absolute;
+    left: 1%;
+    bottom: 0%;
+}
+tr, th {
+	padding: 10px;
+    border-color: white;
+}
+table {
+	
+}
+select {
+	width: 2vw;
+    font-size:14px;
+}
+#inc, #dec {
+	font-size: 30px;
+    padding: 0px 0px;
+    width: 3%;
 }
 </style>
 <body>
-<div style = "background-color: #ffffff;">
+<div style = "background-color: #ffffff;" >
 <form id="regForm" action="/action_page.php">
   <!-- One "tab" for each step in the form: -->
   <div class="tab">
   	<h2>Name:</h2>
-    <p><input placeholder="First name..." oninput="this.className = ''" name="fname"></p>
-    <p><input placeholder="Last name..." oninput="this.className = ''" name="lname"></p>
+    <p><input type='text' placeholder="Last name..." oninput="this.className = ''" name="fname"></p>
+    <h2>Start Date:</h2>
+    <p><input type='date' oninput="this.className = ''" name="startDate"></p>
+    <h2>End Date:</h2>
+    <p><input type='date' oninput="this.className = ''" name="endDate"></p>
+    <h2>Phone Number:</h2>
+    <p><input type='text' placeholder="Phone number..." oninput="this.className = ''" name="phone"></p>
   </div>
   <div class="tab">
-  	<h2>Contact Info:</h2>
-    <p><input placeholder="E-mail..." oninput="this.className = ''" name="email"></p>
-    <p><input placeholder="Phone..." oninput="this.className = ''" name="phone"></p>
+  	<h2>Bikes:</h2>
+    <table>
+    	<tr>
+        	<th>
+            Type:
+            </th>
+            <th>
+            Size:
+            </th>
+        </tr>
+    	<tr class = 'selectTr' style='display:block;'>
+        	<th>
+        		<select class = 'selectType' id=0 onChange='selectFcn(this)'>
+          			<option>H</option>
+          			<option>WH</option>
+                    <option>HS</option>
+                    <option>M</option>
+          			<option>29</option>
+          			<option>C</option>
+          			<option>WC</option>
+                    <option>RB</option>
+          			<option>CX</option>
+          			<option>K</option>
+          			<option>TAG</option>
+                    <option>T</option>
+          			<option disabled selected value='-1' style='display: none'>Type</option>
+        		</select>
+           	</th>
+            <th>
+        		<select class = 'selectSize' onChange=''>
+          			<option disabled selected value='-1' style='display: none'>Size</option>
+        		</select>
+           	</th>
+        </tr>
+        <tr class = 'selectTr' style='display:none;'>
+        	<th>
+        		<select class = 'selectType' id=1 onChange='selectFcn(this)'>
+          			<option>H</option>
+          			<option>WH</option>
+                    <option>HS</option>
+                    <option>M</option>
+          			<option>29</option>
+          			<option>C</option>
+          			<option>WC</option>
+                    <option>RB</option>
+          			<option>CX</option>
+          			<option>K</option>
+          			<option>TAG</option>
+                    <option>T</option>
+                    <option value = '-2'>----</option>
+          			<option disabled selected value='-1' style='display: none'>Type</option>
+        		</select>
+           	</th>
+            <th>
+        		<select class = 'selectSize' onChange=''>
+          			<option disabled selected value='-1' style='display: none'>Size</option>
+        		</select>
+           	</th>
+        </tr>
+        <tr class = 'selectTr' style='display:none;'>
+        	<th>
+        		<select class = 'selectType' id=2 onChange='selectFcn(this)'>
+          			<option>H</option>
+          			<option>WH</option>
+                    <option>HS</option>
+                    <option>M</option>
+          			<option>29</option>
+          			<option>C</option>
+          			<option>WC</option>
+                    <option>RB</option>
+          			<option>CX</option>
+          			<option>K</option>
+          			<option>TAG</option>
+                    <option>T</option>
+                    <option value = '-2'>----</option>
+          			<option disabled selected value='-1' style='display: none'>Type</option>
+        		</select>
+           	</th>
+            <th>
+        		<select class = 'selectSize' onChange=''>
+          			<option disabled selected value='-1' style='display: none'>Size</option>
+        		</select>
+           	</th>
+        </tr>
+        <tr class = 'selectTr' style='display:none;'>
+        	<th>
+        		<select class = 'selectType' id=3 onChange='selectFcn(this)'>
+          			<option>H</option>
+          			<option>WH</option>
+                    <option>HS</option>
+                    <option>M</option>
+          			<option>29</option>
+          			<option>C</option>
+          			<option>WC</option>
+                    <option>RB</option>
+          			<option>CX</option>
+          			<option>K</option>
+          			<option>TAG</option>
+                    <option>T</option>
+                    <option value = '-2'>----</option>
+          			<option disabled selected value='-1' style='display: none'>Type</option>
+        		</select>
+           	</th>
+            <th>
+        		<select class = 'selectSize' onChange=''>
+          			<option disabled selected value='-1' style='display: none'>Size</option>
+        		</select>
+           	</th>
+        </tr>
+         <tr class = 'selectTr' style='display:none;'>
+        	<th>
+        		<select class = 'selectType' id=4 onChange='selectFcn(this)'>
+          			<option>H</option>
+          			<option>WH</option>
+                    <option>HS</option>
+                    <option>M</option>
+          			<option>29</option>
+          			<option>C</option>
+          			<option>WC</option>
+                    <option>RB</option>
+          			<option>CX</option>
+          			<option>K</option>
+          			<option>TAG</option>
+                    <option>T</option>
+                    <option value = '-2'>----</option>
+          			<option disabled selected value='-1' style='display: none'>Type</option>
+        		</select>
+           	</th>
+            <th>
+        		<select class = 'selectSize' onChange=''>
+          			<option disabled selected value='-1' style='display: none'>Size</option>
+        		</select>
+           	</th>
+        </tr>
+        <tr class = 'selectTr' style='display:none;'>
+        	<th>
+        		<select class = 'selectType' id=5 onChange='selectFcn(this)'>
+          			<option>H</option>
+          			<option>WH</option>
+                    <option>HS</option>
+                    <option>M</option>
+          			<option>29</option>
+          			<option>C</option>
+          			<option>WC</option>
+                    <option>RB</option>
+          			<option>CX</option>
+          			<option>K</option>
+          			<option>TAG</option>
+                    <option>T</option>
+                    <option value = '-2'>----</option>
+          			<option disabled selected value='-1' style='display: none'>Type</option>
+        		</select>
+           	</th>
+            <th>
+        		<select class = 'selectSize' onChange=''>
+          			<option disabled selected value='-1' style='display: none'>Size</option>
+        		</select>
+           	</th>
+        </tr>
+        <tr class = 'selectTr' style='display:none;'>
+        	<th>
+        		<select class = 'selectType' id=6 onChange='selectFcn(this)'>
+          			<option>H</option>
+          			<option>WH</option>
+                    <option>HS</option>
+                    <option>M</option>
+          			<option>29</option>
+          			<option>C</option>
+          			<option>WC</option>
+                    <option>RB</option>
+          			<option>CX</option>
+          			<option>K</option>
+          			<option>TAG</option>
+                    <option>T</option>
+                    <option value = '-2'>----</option>
+          			<option disabled selected value='-1' style='display: none'>Type</option>
+        		</select>
+           	</th>
+            <th>
+        		<select class = 'selectSize' onChange=''>
+          			<option disabled selected value='-1' style='display: none'>Size</option>
+        		</select>
+           	</th>
+        <tr class = 'selectTr' style='display:none;'>
+        	<th>
+        		<select class = 'selectType' id=7 onChange='selectFcn(this)'>
+          			<option>H</option>
+          			<option>WH</option>
+                    <option>HS</option>
+                    <option>M</option>
+          			<option>29</option>
+          			<option>C</option>
+          			<option>WC</option>
+                    <option>RB</option>
+          			<option>CX</option>
+          			<option>K</option>
+          			<option>TAG</option>
+                    <option>T</option>
+                    <option value = '-2'>----</option>
+          			<option disabled selected value='-1' style='display: none'>Type</option>
+        		</select>
+           	</th>
+            <th>
+        		<select class = 'selectSize' onChange=''>
+          			<option disabled selected value='-1' style='display: none'>Size</option>
+        		</select>
+           	</th>
+            <tr class = 'selectTr' style='display:none;'>
+        	<th>
+        		<select class = 'selectType' id=8 onChange='selectFcn(this)'>
+          			<option>H</option>
+          			<option>WH</option>
+                    <option>HS</option>
+                    <option>M</option>
+          			<option>29</option>
+          			<option>C</option>
+          			<option>WC</option>
+                    <option>RB</option>
+          			<option>CX</option>
+          			<option>K</option>
+          			<option>TAG</option>
+                    <option>T</option>
+                    <option value = '-2'>----</option>
+          			<option disabled selected value='-1' style='display: none'>Type</option>
+        		</select>
+           	</th>
+            <th>
+        		<select class = 'selectSize' onChange=''>
+          			<option disabled selected value='-1' style='display: none'>Size</option>
+        		</select>
+           	</th>
+        </tr>
+    </table>
   </div>
-  <div class="tab">
-  	<h2>Birthday:</h2>
-    <p><input placeholder="dd" oninput="this.className = ''" name="dd"></p>
-    <p><input placeholder="mm" oninput="this.className = ''" name="nn"></p>
-    <p><input placeholder="yyyy" oninput="this.className = ''" name="yyyy"></p>
-  </div>
-  <div class="tab">
-  	<h2>Login Info:</h2>
-    <p><input placeholder="Username..." oninput="this.className = ''" name="uname"></p>
-    <p><input placeholder="Password..." oninput="this.className = ''" name="pword" type="password"></p>
-  </div>
+
   <div class= "b-bottom">
-     <div class= "block" style="float:right;">
+     <div class= "block" id = 'b-button' style="float:right;">
       <button class = "gray" type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
       <button class="blue" type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
      </div>
          <!-- Circles which indicates the steps of the form: -->
-  	 <div style="text-align:left;margin-top: 5%;margin-left: 3%; margin-bottom:3%;">
-    	<span class="step"></span>
-    	<span class="step"></span>
+  	 <div id = 'b-span' style="text-align:left;margin-top: 5%;margin-left: 3%; margin-bottom:3%;">
     	<span class="step"></span>
     	<span class="step"></span>
      </div>
     </div>
 </form>
-<div>
+</div>
+</body>
 <script>
+
 var currentTab = 0; // Current tab is set to be the first tab (0)
 showTab(currentTab); // Display the crurrent tab
+var hList = ['15', '17', '19', '21','22.5','24'];
+var whList = ['15', '17', '19', '20.5'];
+var hsList = ['17','19','20.5'];
+var mList = ['13','15','17','19','20.5','22','24'];
+var b29er = ['S','M','L'];
+var cList = ['16', '17', '18', '20', '21'];
+var wcList = ['14','15', '16', '17', '18'];
+var rbList = ['50', '52', '54', '56', '58'];
+var cxList = ['48', '52', '54', '56', '58'];
+var kList = ['16(NG)', '20', '24'];
+var talong = [''];
+var trailor = ['S','D'];
+var allList = [hList, whList, hList, mList, b29er, cList, wcList,rbList,cxList, kList,talong,trailor];
 
+function selectFcn(e) {
+	//window.alert(e.selectedIndex)
+	if (e.selectedIndex < 12) {
+		var oList = allList[e.selectedIndex];
+    	var sSelect = document.getElementsByClassName('selectSize');
+    	var s = '';
+    	for(var i = 0; i < oList.length; i++) {
+    		s += '<option>' + oList[i] + '</option>';
+    	}
+        s+=  "<option value='-1' style='display: none'>None</option>";
+    	s += "<option disabled selected value='-1' style='display: none'>Size</option>";
+        sSelect[0].innerHTML = s;
+    }
+}
 function showTab(n) {
   // This function will display the specified tab of the form...
   var x = document.getElementsByClassName("tab");
@@ -178,9 +456,10 @@ function nextPrev(n) {
 
 function validateForm() {
   // This function deals with validation of the form fields
-  var x, y, i, valid = true;
+  var x, y, z, i, valid = true;
   x = document.getElementsByClassName("tab");
   y = x[currentTab].getElementsByTagName("input");
+  z = x[currentTab].getElementsByTagName("select");
   // A loop that checks every input field in the current tab:
   for (i = 0; i < y.length; i++) {
     // If a field is empty...
@@ -190,6 +469,18 @@ function validateForm() {
       // and set the current valid status to false
       valid = false;
     }
+  }
+  w = x[currentTab].getElementsByClassName('selectTr');
+  for (i = 0; i < z.length && i < w.length; i++) {
+    // If a field is empty...
+    if(w[i].style.display !== 'none') {
+    	if (z[i].value === "-1") {
+      	// add an "invalid" class to the field:
+      	z[i].className += " invalid";
+      	// and set the current valid status to false
+      	valid = false;
+    	}
+     }
   }
   // If the valid status is true, mark the step as finished and valid:
   var s = document.getElementsByClassName("step")[currentTab];
@@ -214,6 +505,4 @@ function fixStepIndicator(n) {
   x[n].className += " active";
 }
 </script>
-
-</body>
 </html>

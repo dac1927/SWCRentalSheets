@@ -2,9 +2,11 @@
 //get checked: var isChecked = document.getElementById('id_of_checkbox').checked; 
 //setup for the spreadsheet, mostly script properties
 function test() {
-  var ui = SpreadsheetApp.getUi()
   var html = HtmlService.createHtmlOutputFromFile('rez')
-  ui.showModalDialog(html, 'Reservation Form')
+  .setTitle('Rezervation Tools')
+  .setWidth(300);
+SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+  .showSidebar(html);
 }
 function setUp() {
     onOpen();
@@ -33,8 +35,8 @@ function setUp() {
     var rezRowArray = rezsheet.getRange('rentals!A1:' + 'A' + rezsheet.getLastRow()).getValues().join().split(',');
     var rezRowDict = {};
     for(i = 0; i < rezRowArray.length; i++) {
-       if (rezRowArray[i] != "" && rezRowArray[i] != undefined && rezRowArray[i] != null) {
-           if(rezRowDict[rezRowArray[i]] != undefined) {
+       if (rezRowArray[i] !== "" && rezRowArray[i] !== undefined && rezRowArray[i] !== null && rezRowArray[i].charAt(0) !== '*') {
+           if(rezRowDict[rezRowArray[i]] !== undefined) {
              rezRowDict[rezRowArray[i]].push(String((i + 1).toFixed(0)));
            }
            else {
@@ -431,7 +433,7 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
   endDate.setDate(date.split('-')[2])
   var x = [];  //holds ranges for each bike
   var conflicts = []; //holds conflicts
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rezervations")
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals")
   var bikes = []; //holds bike objects
   for(var i = 0; i < id.length; i++) {
     bikes.push.apply(bikes , retriveObject(id[i]));
