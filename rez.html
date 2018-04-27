@@ -118,7 +118,7 @@ th, td {
 </style>
 <body>
 <div style = "background-color: #ffffff;" >
-<form id="regForm" action="/action_page.php">
+<form id="regForm">
   <!-- One "tab" for each step in the form: -->
   <div class="tab">
   	<h2>Name:</h2>
@@ -448,7 +448,9 @@ var kList = ['16(NG)', '20', '24'];
 var talong = [''];
 var trailor = ['S','D'];
 var allList = [hList, whList, hList, mList, b29er, cList, wcList,rbList,cxList, kList,talong,trailor];
-
+function submitForm() {
+  window.alert('Submitting form!');
+}
 function selectFcn(e) {
 	//window.alert(e.selectedIndex)
 	if (e.selectedIndex < 12) {
@@ -495,9 +497,11 @@ function nextPrev(n) {
   // if you have reached the end of the form...
   if (currentTab + n >= x.length) {
     // ... the form gets submitted:
-    if(validateForm())
-    	document.getElementById("regForm").submit();
-    else
+    if(validateForm()) {
+      submitForm();
+    	document.getElementById("regForm").reset();
+    }
+      else
     	showTab(currentTab);
     return false;
   } else {

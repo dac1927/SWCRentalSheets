@@ -80,12 +80,20 @@ function onOpen() {
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .createMenu('Rental Tools')
       .addItem('Show Rental Tools', 'showRentalSidebar')
+      .addItem('Show Rez Form', 'showRezSidebar')
       .addToUi();
 }
 
 function showRentalSidebar() {
   var html = HtmlService.createHtmlOutputFromFile('side')
       .setTitle('Rental Tools')
+      .setWidth(300);
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .showSidebar(html);
+}
+function showRezSidebar() {
+  var html = HtmlService.createHtmlOutputFromFile('rez')
+      .setTitle('Rez Form')
       .setWidth(300);
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .showSidebar(html);
