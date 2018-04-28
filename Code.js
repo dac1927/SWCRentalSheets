@@ -345,7 +345,6 @@ function colorToday() {
     rental.setBackgroundRGB(144, 206, 162);
     if (SpreadsheetApp.getActiveSheet().getName() !== "input") {
       rental.activate();
-      rez.activate();
     }
   }
 }
