@@ -2,11 +2,10 @@
 //get checked: var isChecked = document.getElementById('id_of_checkbox').checked; 
 //setup for the spreadsheet, mostly script properties
 function test() {
-  var html = HtmlService.createHtmlOutputFromFile('rez')
-  .setTitle('Rezervation Tools')
-  .setWidth(300);
-SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
-  .showSidebar(html);
+  var bikes = [];
+  bikes.push("H19R");
+  bikes.push("H17");
+  finishRez("Devin", new Date(), new Date(), bikes);
 }
 function setUp() {
     onOpen();
@@ -236,6 +235,9 @@ function nextEmptyCell(range) {
   return (ct+1);
 }
 //fcns for sidebars ################################################################################################################################
+function getHMTL(name) {
+    return HtmlService.createHtmlOutputFromFile(name).getContent();
+}
 function guid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -363,7 +365,7 @@ function hardReset() {
   resetList();
   setUp();
 }
-function findPotential(bike, name, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
+function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
   Logger.log(bike.type);
   var bikes = null;
@@ -380,8 +382,7 @@ function findPotential(bike, name, endDate, hasRez) //desired bike, name on rent
     bikes = retriveObject(bike.type + "R")     
   if(bikes === null)
     Logger.log("BIKE DOESN'T EXIST");       
-  var today = new Date();
-  var startID = findColumn(today);
+  var startID = findColumn(startDate);
   var endID = findColumn(endDate);
   if(startID !== -1 && bikes !== null) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('rentals');
@@ -447,7 +448,7 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
   }
   for(var i = 0; i < bikes.length; i++) {
     Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
-    x[i] = findPotential(bikes[i], name, endDate, false);
+    x[i] = findPotential(bikes[i], name, new Date(), endDate, false);
     if (x[i] === "Conflict") {
       conflicts.push(bikes[i].type + bikes[i].letter);
       }
@@ -464,8 +465,46 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
     idList = idList.filter(function(n){return n != 'DELETE'});
     storeObject('IDLIST', idList)
     return true;
+  } else {
+   var ui = SpreadsheetApp.getUi()
+   var string = new String();
+   conflicts.forEach(function(element){
+               string += (" " + element);
+             })
+   ui.alert("Conflicts with bike" + (conflicts.length > 1? "s":"") + ":" + string)
+   return false;
   }
-  else {
+}
+function finishRez(name, sDate, eDate, bikeStrings) {
+  var startDate = new Date();
+  var endDate = new Date();
+  endDate.setMonth(parseInt(eDate.split('-')[1]) - 1);
+  endDate.setDate(eDate.split('-')[2]);
+  startDate.setMonth(parseInt(sDate.split('-')[1]) - 1);
+  startDate.setDate(sDate.split('-')[2]);
+  var bikes = [];
+  var rack;
+  var regex1 = new RegExp('^.*R$');
+  for(var i = 0; i < bikeStrings.length; i++) {
+    rack = regex1.test(bikeStrings[i]);
+    if (rack)
+      bikeStrings[i] = bikeStrings[i].substr(0,bikeStrings[i].length - 1);
+    bikes.push({type:  bikeStrings[i], letter: "", rack: rack});
+  }
+  var x = [], conflicts = [];
+  for(var i = 0; i < bikes.length; i++) {
+    x[i] = findPotential(bikes[i], name, startDate, endDate, false);
+    if (x[i] === "Conflict") {
+      conflicts.push(bikes[i].type + bikes[i].letter);
+      }
+  }
+  Logger.log(conflicts);
+  if (conflicts.length == 0) {
+    for(var i = 0; i < x.length; i ++) {
+      x[i].setValue(name);
+    }
+    return true;
+  } else {
    var ui = SpreadsheetApp.getUi()
    var string = new String();
    conflicts.forEach(function(element){

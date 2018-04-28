@@ -118,7 +118,7 @@ th, td {
 </style>
 <body>
 <div style = "background-color: #ffffff;" >
-<form id="regForm">
+<form id="regForm" onsubmit="">
   <!-- One "tab" for each step in the form: -->
   <div class="tab">
   	<h2>Name:</h2>
@@ -449,7 +449,30 @@ var talong = [''];
 var trailor = ['S','D'];
 var allList = [hList, whList, hList, mList, b29er, cList, wcList,rbList,cxList, kList,talong,trailor];
 function submitForm() {
-  window.alert('Submitting form!');
+  var type = document.getElementsByClassName('selectType');
+  var size = document.getElementsByClassName('selectSize');
+  var check = document.getElementsByClassName('bikeCheck');
+  var name = document.getElementsByName('fname')[0];
+  var sDate = document.getElementsByName('startDate')[0];
+  var eDate = document.getElementsByName('endDate')[0];
+  var bikes = [];
+  for(var i = 0; i < check.length; i++) {
+    if(check[i].checked) {
+      bikes.push(type[i].options[type[i].selectedIndex].value + size[i].options[size[i].selectedIndex].value );
+    }
+  }
+  google.script.run.withSuccessHandler(resetForm)
+  .withFailureHandler(function(msg,element){})
+  .finishRez(name.value, sDate.value, eDate.value, bikes);
+}
+function resetForm(e) {
+  if(e) {
+    document.getElementById('regForm').reset();
+    nextPrev(-1);
+    var s = document.getElementsByClassName("step");
+    s[0].className = "step";
+    s[1].className = "step";
+  }
 }
 function selectFcn(e) {
 	//window.alert(e.selectedIndex)
@@ -499,16 +522,15 @@ function nextPrev(n) {
     // ... the form gets submitted:
     if(validateForm()) {
       submitForm();
-    	document.getElementById("regForm").reset();
+    } else {
+      showTab(currentTab);
     }
-      else
-    	showTab(currentTab);
     return false;
   } else {
-  	currentTab = currentTab + n;
+    currentTab = currentTab + n;
+    showTab(currentTab);
   }
   // Otherwise, display the correct tab:
-  showTab(currentTab);
   return true;
 }
 

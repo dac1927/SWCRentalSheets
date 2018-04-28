@@ -8,117 +8,6 @@
 }
 </style>
 <body>
-<script>
-reload();
-function reload() {
-  google.script.run.withSuccessHandler(loadRental)
-    .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
-}
-function performAction() {
-  var select = document.getElementById('select');
-  switch(select.selectedIndex) {
-    case 0:
-        enterRental();
-        break;
-    case 1:
-        splitRental();
-        break;
-    case 2:
-        deleteRental();
-        break;
-    case 3:
-        reloadAll();
-        break;
-    default:
-        window.alert("Selection doesn't exist");
-  }
-}
-function reloadAll() {
-  reload()
-  document.getElementById('mainForm').reset();
-}
-function loadRental(rentals) {
-  var main = document.getElementById('main');
-  var divs = document.getElementsByName('check');
-  var labels = document.getElementsByName('checktext')
-  for(var i = 0; i < divs.length; i++) {
-     divs[i].setAttribute('rentalid', '');
-     labels[i].innerHTML = '';
-     divs[i].style.display = 'none';
-    if(i < rentals.length && rentals[i] != null) {
-      labels[i].setAttribute('rentalid', rentals[i].id);
-      labels[i].innerHTML = rentals[i].bikes;
-      divs[i].style.display = 'block';
-    }
-  }
-  document.getElementById("f1u").style.display = 'none';
-  main.style.display = 'block';
-}
-function enterRental() {
-    var checks = document.getElementsByName('checkbox');
-    var labels = document.getElementsByName('checktext');
-    var date = document.getElementById('dateinput').value
-    var name = document.getElementById('nameinput').value
-    var ids = [];
-    for(var i = 0; i < checks.length; i++) {
-      if (checks[i].checked) {
-         ids[ids.length] = labels[i].getAttribute('rentalid');
-      }
-    }
-    google.script.run.withSuccessHandler(onSuccess).finishRental(name, date, ids);
-    function onSuccess(finished) {
-        if(finished)
-        google.script.run.withSuccessHandler(loadRental)
-    .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
-    }
-}
-function deleteRental() {
-  var checks = document.getElementsByName('checkbox');
-  var labels = document.getElementsByName('checktext');
-  var ids = [];
-  for(var i = 0; i < checks.length; i++) {
-      if (checks[i].checked) {
-         ids[ids.length] = labels[i].getAttribute('rentalid');
-      }
-    }
-   google.script.run.withSuccessHandler(onDelete).deleteRental(ids)
-   function onDelete(completed) {
-     if (completed)
-     google.script.run.withSuccessHandler(loadRental).getNextRentals();
-   }
-}
-function splitRental() {
-  var checks = document.getElementsByName('checkbox');
-  var labels = document.getElementsByName('checktext');
-  var ids = [];
-  for(var i = 0; i < checks.length; i++) {
-      if (checks[i].checked) {
-         ids[ids.length] = labels[i].getAttribute('rentalid');
-      }
-      if (checks[i].unchecked) {
-         ids[ids.length] = labels[i].getAttribute('rentalid');
-      }
-    }
-   google.script.run.withSuccessHandler(onSplit).withFailureHandler(function(msg,element){window.alert("failed"); }).splitRentalsDialog(ids)
-   function onSplit(completed) {
-     if (completed)
-     reload();
-   } 
-}
-document.onreadystatechange = function() {
-  if (document.readyState === 'complete') {
-    fn();
-  }
-}
-function fn() {
-  document.getElementById('select').onchange = function(e) {
-   if(this.selectedIndex === 0)
-      document.getElementById('f1u').style.display = 'block';
-   else
-      document.getElementById('f1u').style.display = 'none';
-};
-}
-</script>
 <div class="sidebar branding-below" id = 'main' style="display:none;">
   <form id='mainForm' onsubmit="return false;">  
     <div class="block form-group">
@@ -195,3 +84,114 @@ function fn() {
     Rental Tools by Devin Christianson</span>
 </div>
 </body>
+<script>
+    reload();
+    function reload() {
+      google.script.run.withSuccessHandler(loadRental)
+        .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
+    }
+    function performAction() {
+      var select = document.getElementById('select');
+      switch(select.selectedIndex) {
+        case 0:
+            enterRental();
+            break;
+        case 1:
+            splitRental();
+            break;
+        case 2:
+            deleteRental();
+            break;
+        case 3:
+            reloadAll();
+            break;
+        default:
+            window.alert("Selection doesn't exist");
+      }
+    }
+    function reloadAll() {
+      reload()
+      document.getElementById('mainForm').reset();
+    }
+    function loadRental(rentals) {
+      var main = document.getElementById('main');
+      var divs = document.getElementsByName('check');
+      var labels = document.getElementsByName('checktext')
+      for(var i = 0; i < divs.length; i++) {
+         divs[i].setAttribute('rentalid', '');
+         labels[i].innerHTML = '';
+         divs[i].style.display = 'none';
+        if(i < rentals.length && rentals[i] != null) {
+          labels[i].setAttribute('rentalid', rentals[i].id);
+          labels[i].innerHTML = rentals[i].bikes;
+          divs[i].style.display = 'block';
+        }
+      }
+      document.getElementById("f1u").style.display = 'none';
+      main.style.display = 'block';
+    }
+    function enterRental() {
+        var checks = document.getElementsByName('checkbox');
+        var labels = document.getElementsByName('checktext');
+        var date = document.getElementById('dateinput').value
+        var name = document.getElementById('nameinput').value
+        var ids = [];
+        for(var i = 0; i < checks.length; i++) {
+          if (checks[i].checked) {
+             ids[ids.length] = labels[i].getAttribute('rentalid');
+          }
+        }
+        google.script.run.withSuccessHandler(onSuccess).finishRental(name, date, ids);
+        function onSuccess(finished) {
+            if(finished)
+            google.script.run.withSuccessHandler(loadRental)
+        .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
+        }
+    }
+    function deleteRental() {
+      var checks = document.getElementsByName('checkbox');
+      var labels = document.getElementsByName('checktext');
+      var ids = [];
+      for(var i = 0; i < checks.length; i++) {
+          if (checks[i].checked) {
+             ids[ids.length] = labels[i].getAttribute('rentalid');
+          }
+        }
+       google.script.run.withSuccessHandler(onDelete).deleteRental(ids)
+       function onDelete(completed) {
+         if (completed)
+         google.script.run.withSuccessHandler(loadRental).getNextRentals();
+       }
+    }
+    function splitRental() {
+      var checks = document.getElementsByName('checkbox');
+      var labels = document.getElementsByName('checktext');
+      var ids = [];
+      for(var i = 0; i < checks.length; i++) {
+          if (checks[i].checked) {
+             ids[ids.length] = labels[i].getAttribute('rentalid');
+          }
+          if (checks[i].unchecked) {
+             ids[ids.length] = labels[i].getAttribute('rentalid');
+          }
+        }
+       google.script.run.withSuccessHandler(onSplit).withFailureHandler(function(msg,element){window.alert("failed"); }).splitRentalsDialog(ids)
+       function onSplit(completed) {
+         if (completed)
+         reload();
+       } 
+    }
+    document.onreadystatechange = function() {
+      if (document.readyState === 'complete') {
+        fn();
+      }
+    }
+    function fn() {
+      document.getElementById('select').onchange = function(e) {
+       if(this.selectedIndex === 0)
+          document.getElementById('f1u').style.display = 'block';
+       else
+          document.getElementById('f1u').style.display = 'none';
+    };
+    }
+    </script>
