@@ -8,7 +8,7 @@ function test() {
   finishRez("Devin", new Date(), new Date(), bikes);
 }
 function onInstall() {
-  storeObject("IDLIST", {});
+  hardReset();
 }
 function setUp() {
     onOpen();
