@@ -7,6 +7,9 @@ function test() {
   bikes.push("H17");
   finishRez("Devin", new Date(), new Date(), bikes);
 }
+function onInstall() {
+  storeObject("IDLIST", {});
+}
 function setUp() {
     onOpen();
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals");
@@ -134,7 +137,7 @@ function onEdit(e) {
          }
        }
        i = nextEmptyCell(sheet.getRange(letter + ":" + letter));
-       if(erange[ct][0].substr(2) == "TOGGLE") {
+       if(erange[ct][0].substr(2) == "TOGGLE") { //TODO: and not in checkout mode
          var b = sheet.getRange(letter + "2:" + letter + String(i.toFixed(0)));
          if(!b.isBlank()) {
          id = guid();
@@ -152,7 +155,7 @@ function onEdit(e) {
          storeObject(id, bikeList);                 //storing the list
          sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
          }
-       } else {
+       } else {  //TODO else if checkout mode, checkout bike && ignore toggle then this vv else
        sheet.getRange(letter + String(i.toFixed(0)) +":" + letter + String(i.toFixed(0))).setValue(erange[ct][0].substr(rm));
        }
        ct++;
@@ -367,21 +370,22 @@ function hardReset() {
 }
 function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
-  Logger.log(bike.type);
   var bikes = null;
   if(!(bike.rack)) {
     bikes = retriveObject(bike.type);                    //retriving potential area w/o rack
     var wRack = retriveObject(bike.type + "R");              //retriving potential area w/ rack
-    Logger.log("no rack" + bikes + " rack" + wRack);
-    if(wRack !== null && bikes !== null)   //if theres space with rack, add to the end of possibilites
-      bikes.concat(wRack); 
-    else if(bikes === null)                                  //if the bike only exists w/rack, avoid concat with assignment
+    if(wRack !== null && bikes !== null) {   //if theres space with rack, add to the end of possibilites
+      bikes = bikes.concat(wRack);
+    }
+      else if(bikes === null)                                  //if the bike only exists w/rack, avoid concat with assignment
       bikes = wRack;
   }
   else
     bikes = retriveObject(bike.type + "R")     
-  if(bikes === null)
-    Logger.log("BIKE DOESN'T EXIST");       
+  if(bikes === null) {
+    Logger.log("BIKE DOESN'T EXIST"); 
+    return "Conflict"
+  }      
   var startID = findColumn(startDate);
   var endID = findColumn(endDate);
   if(startID !== -1 && bikes !== null) {
@@ -401,11 +405,13 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
         for(d = 0; d < vals[o].length && rez; d++) {  //while more to check && rez is found
           if (!(vals[o][d] === name))  //if cell isn't a rez, set to false
             rez = false;
-          if(!(vals[o][d] === "") && !(vals[o][d].match(regex)))
+          if(!(vals[o][d] === "") && (vals[o][d].match(regex))) {
             unused = false;
+            Logger.log("Bike's ID has been found");
+          }
         }
         if(rez === true)
-          break;
+          option = o;
       }
     } else {
       var flag = false;
@@ -420,21 +426,21 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
             }
           }
         }
-        if(flag === true && option === -1)  //if the current row works, and a row hasn't been picked yet
+        if(flag === true && option === -1 && unused)  //if the current row works, and a row hasn't been picked yet
           option = o;
       }
     }
-    if(flag === false || unused === false) {
+    Logger.log("option: " + option);
+    if(option === -1 || !unused) {
       return "Conflict";
     }
-    Logger.log("option: " + option);
     var chosenArea = sheet.getRange(startID + bikes[option] + ':' + endID + bikes[option]);
     //chosenArea.setBackgroundRGB(0, 255, 0);
     return chosenArea;
   }
   return "Conflict";
 }
-function finishRental(name, date, id) { ///finishes the rental with the given info
+function finishRental(name, date, id, hasRez) { ///finishes the rental with the given info
   var today = new Date();
   var endDate = new Date()
   endDate.setMonth(parseInt(date.split('-')[1]) - 1)
@@ -448,7 +454,7 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
   }
   for(var i = 0; i < bikes.length; i++) {
     Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
-    x[i] = findPotential(bikes[i], name, new Date(), endDate, false);
+    x[i] = findPotential(bikes[i], name, new Date(), endDate, hasRez);
     if (x[i] === "Conflict") {
       conflicts.push(bikes[i].type + bikes[i].letter);
       }
@@ -466,7 +472,7 @@ function finishRental(name, date, id) { ///finishes the rental with the given in
     storeObject('IDLIST', idList)
     return true;
   } else {
-   var ui = SpreadsheetApp.getUi()
+   var ui = SpreadsheetApp.getUi();
    var string = new String();
    conflicts.forEach(function(element){
                string += (" " + element);

@@ -75,7 +75,9 @@
     </div>
     <!--This is where the selector used to be -->
     <div class = "block">
-      <button class = "blue" onclick = "performAction()">Submit</button>
+      <button class = "blue" onclick = "performAction()" style="margin:5px;">Submit</button>
+        <input type="checkbox" id = 'rez' name="hasRez" style="margin:5px;">
+        <label for="rez" id='rezLabel'>Rez?</label>
     </div>
     </form>
 </div>
@@ -127,26 +129,37 @@
           divs[i].style.display = 'block';
         }
       }
-      document.getElementById("f1u").style.display = 'none';
+      hideForm();
       main.style.display = 'block';
+    }
+    function showForm() {
+      document.getElementById("f1u").style.display = 'block';
+      document.getElementById("rez").style.display = '';
+      document.getElementById("rezLabel").style.display = '';
+    }
+    function hideForm() {
+      document.getElementById("f1u").style.display = 'none';
+      document.getElementById("rez").style.display = 'none';
+      document.getElementById("rezLabel").style.display = 'none';
     }
     function enterRental() {
         var checks = document.getElementsByName('checkbox');
         var labels = document.getElementsByName('checktext');
         var date = document.getElementById('dateinput').value
         var name = document.getElementById('nameinput').value
+        var hasRez = document.getElementById('rez').checked
         var ids = [];
         for(var i = 0; i < checks.length; i++) {
           if (checks[i].checked) {
              ids[ids.length] = labels[i].getAttribute('rentalid');
           }
         }
-        google.script.run.withSuccessHandler(onSuccess).finishRental(name, date, ids);
+        google.script.run.withSuccessHandler(onSuccess).finishRental(name, date, ids, hasRez);
         function onSuccess(finished) {
-            if(finished)
-            google.script.run.withSuccessHandler(loadRental)
-        .withFailureHandler(function(msg,element){window.alert("failed"); }).getNextRentals();
-        }
+            if(finished) {
+            reloadAll();
+            }
+      }
     }
     function deleteRental() {
       var checks = document.getElementsByName('checkbox');
@@ -160,7 +173,7 @@
        google.script.run.withSuccessHandler(onDelete).deleteRental(ids)
        function onDelete(completed) {
          if (completed)
-         google.script.run.withSuccessHandler(loadRental).getNextRentals();
+         reloadAll();
        }
     }
     function splitRental() {
@@ -178,7 +191,7 @@
        google.script.run.withSuccessHandler(onSplit).withFailureHandler(function(msg,element){window.alert("failed"); }).splitRentalsDialog(ids)
        function onSplit(completed) {
          if (completed)
-         reload();
+         reloadAll();
        } 
     }
     document.onreadystatechange = function() {
@@ -189,9 +202,9 @@
     function fn() {
       document.getElementById('select').onchange = function(e) {
        if(this.selectedIndex === 0)
-          document.getElementById('f1u').style.display = 'block';
+          showForm();
        else
-          document.getElementById('f1u').style.display = 'none';
+          hideForm();
     };
     }
     </script>
