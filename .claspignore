@@ -1,4 +1,4 @@
 .gitignore
 *.md
 .git
-
+*.sh
