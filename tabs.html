@@ -45,51 +45,34 @@ body {
 </style>
 </head>
 <body onload='loadTools()'>
-<div class="tabNav">
-  <button class="tablinks" onclick="openToolTab(event, 'renTools')">Rentals</button>
-  <button class="tablinks" onclick="openToolTab(event, 'avail')">Avail.</button>
-  <button class="tablinks" onclick="openToolTab(event, 'rezTools')">Rez Form</button>
-</div>
+    <div class="tabNav">
+        <button class="tablinks" onclick="openToolTab(event, 'renTools')">Rentals</button>
+        <button class="tablinks" onclick="openToolTab(event, 'avail')">Avail.</button>
+        <button class="tablinks" onclick="openToolTab(event, 'rezTools')">Rez Form</button>
+    </div>
 
-<div id="renTools" class="tabcontent">
-        <h3>Rental Tools</h3>
-        <p>Your mom is the capital of your mom.</p> 
-</div>
+    <div id="renTools" class="tabcontent">  
+    </div>
 
-<div id="avail" class="tabcontent">
-  <h3>Availability</h3>
-  <p>Paris is the capital of France.</p> 
-</div>
-
-<div id="rezTools" class="tabcontent">
-  <h3>Rez Form</h3>
-  <p>Tokyo is the capital of Japan.</p>
-</div>
-
-<script>
-function loadTools() {
-    window.alert('loadTools()');
-    google.script.run.withSuccessHandler(onHtmlLoad)
-    .withFailureHandler(function(msg,element){window.alert("failed"); })
-    .getHTML('side');
-}
-function onHtmlLoad(html) {
-    document.getElementById('renTools').innerHTML = 'Hello World'; 
-}
-function openToolTab(evt, cityName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(cityName).style.display = "block";
-    evt.currentTarget.className += " active";
-}
-</script>
-     
+    <div id="avail" class="tabcontent">
+        <h3>Availability</h3>
+    </div>
+    <div id="rezTools" class="tabcontent">
+    </div>
 </body>
+<script>
+    function openToolTab(evt, cityName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+    </script>
 </html> 

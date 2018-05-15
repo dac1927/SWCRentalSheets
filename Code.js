@@ -2,10 +2,14 @@
 //get checked: var isChecked = document.getElementById('id_of_checkbox').checked; 
 //setup for the spreadsheet, mostly script properties
 function test() {
-  var bikes = [];
-  bikes.push("H19R");
-  bikes.push("H17");
-  finishRez("Devin", new Date(), new Date(), bikes);
+   var html = HtmlService.createHtmlOutputFromFile('tabs')
+      .setTitle('Rental Tools')
+      .setWidth(300);
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .showSidebar(html);
+}
+function logSomething() {
+  Logger.log('something');
 }
 function onInstall() {
   hardReset();
@@ -102,6 +106,9 @@ function showRezSidebar() {
 }
 //end of setup!
 //INGEST ##################################################################################################################################################
+function checkIn(bike) {
+  
+}
 function onEdit(e) {
    var sheet = SpreadsheetApp.getActiveSheet();
    if (sheet.getName() == "input" && sheet.getActiveRange().getColumn() == 1) {
