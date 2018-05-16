@@ -14,8 +14,8 @@ function logSomething() {
 function onInstall() {
   hardReset();
 }
-function setUp() {
-    onOpen();
+function onOpen() {
+    addUI();
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals");
     var idList = retriveObject("IDLIST");  //storing the current list of current ids in memory
     var count = 0;
@@ -82,7 +82,7 @@ function setUp() {
 
 }
 //functions with auto triggers
-function onOpen() {
+function addUI() {
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .createMenu('Rental Tools')
       .addItem('Show Rental Tools', 'showRentalSidebar')
@@ -373,7 +373,7 @@ function resetList() {
 }
 function hardReset() {
   resetList();
-  setUp();
+  onOpen();
 }
 function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
