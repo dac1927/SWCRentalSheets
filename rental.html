@@ -128,6 +128,9 @@ th, td {
     <p><input type='date' oninput="this.className = ''" name="startDate"></p>
     <h2>End Date:</h2>
     <p><input type='date' oninput="this.className = ''" name="endDate"></p>
+    <h2>Has Rez? 
+      <input type="checkbox" id = "rez">
+    </h2>
   </div>
   <div class="tab">
   	<h2>Bikes:</h2>
@@ -487,17 +490,19 @@ function submitForm() {
   var name = document.getElementsByName('fname')[0];
   var sDate = document.getElementsByName('startDate')[0];
   var eDate = document.getElementsByName('endDate')[0];
+  var letters = document.getElementsByClassName('letter');
+  var hasRez =  document.getElementById('rez');
   var bikes = [];
   var bikeTemp;
   for(var i = 0; i < check.length; i++) {
     if(check[i].checked) {
-      bikeTemp = {type: type[i].options[type[i].selectedIndex].value + size[i].options[size[i].selectedIndex].value, letter: split[1], rack: (split[2] ? true : false)};
+      bikeTemp = {type: type[i].options[type[i].selectedIndex].value + size[i].options[size[i].selectedIndex].value, letter: letters[i].value, rack: false};
       bikes.push(bikeTemp);
     }
   }
   google.script.run.withSuccessHandler(resetForm)
   .withFailureHandler(function(msg,element){})
-  .finishRez(name.value, sDate.value, eDate.value, bikes);
+  .inputBikes(name.value, sDate.value, eDate.value, bikes, hasRez.checked);
 }
 function resetForm(e) {
   if(e) {

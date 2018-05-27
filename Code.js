@@ -455,6 +455,38 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
   }
   return "Conflict";
 }
+function inputBikes(name, sdate, edate, bikes, hasRez) {
+  var endDate = new Date();
+  var startDate = new Date();
+  endDate.setMonth(parseInt(edate.split('-')[1]) - 1);
+  endDate.setDate(edate.split('-')[2]);
+  startDate.setMonth(parseInt(sdate.split('-')[1]) - 1);
+  startDate.setDate(sdate.split('-')[2]);
+  var x = [];  //holds ranges for each bike
+  var conflicts = []; //holds conflicts
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals")
+  for(var i = 0; i < bikes.length; i++) {
+    Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
+    x[i] = findPotential(bikes[i], name, startDate, endDate, hasRez);
+    if (x[i] === "Conflict") {
+      conflicts.push(bikes[i].type + bikes[i].letter);
+      }
+  }
+  if (conflicts.length == 0) {
+    for(var i = 0; i < x.length; i ++) {
+      x[i].setValue(bikes[i].letter + ":" + name);
+    }
+    return true;
+  } else {
+   var ui = SpreadsheetApp.getUi();
+   var string = new String();
+   conflicts.forEach(function(element){
+               string += (" " + element);
+             })
+   ui.alert("Conflicts with bike" + (conflicts.length > 1? "s":"") + ":" + string)
+   return false;
+  }
+}
 function finishRental(name, sdate, edate, id, hasRez) { ///finishes the rental with the given info
   if(sdate === null)
     sdate = new Date();
