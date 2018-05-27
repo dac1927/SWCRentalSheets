@@ -169,8 +169,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -199,8 +199,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -229,8 +229,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -259,8 +259,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -289,8 +289,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -319,8 +319,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -349,8 +349,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -379,8 +379,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -409,8 +409,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -439,8 +439,8 @@ th, td {
           			<option disabled selected value='-1' style='display: none'>Size</option>
         		</select>
             </td>
-            <td class = "letter" style="width: 1.5em; text-align:center">
-                <input type="text" style="width:1.5em">
+            <td style="width: 1.5em; text-align:center">
+                <input class = "letter" type="text" style="width:1.5em">
             </td>   
             <td style='text-align:center'>
             <input type="checkbox" class = 'bikeCheck'>
@@ -593,7 +593,7 @@ function validateForm() {
  	 for (i = 0; i < z.length && i < c.length; i++) {
     	// If a field is empty...
    	 	if(c[i].checked) {
-    		if (z[i].value === "-1" || letters[i].value.length != 1 && letters[i].value == "") {
+    		if (z[i].value === "-1" || letters[i].value.length !== 1 || letters[i].value === "") {
       		// add an "invalid" class to the field:
     	  	z[i].className += " invalid";
 	      	// and set the current valid status to false
