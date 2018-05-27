@@ -85,8 +85,9 @@ function onOpen() {
 function addUI() {
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .createMenu('Rental Tools')
-      .addItem('Show Rental Tools', 'showRentalSidebar')
+      .addItem('Show Rental Form', 'showRentalForm')
       .addItem('Show Rez Form', 'showRezSidebar')
+      .addItem('Show Rental Tools', 'showRentalSidebar')
       .addToUi();
 }
 
@@ -100,6 +101,13 @@ function showRentalSidebar() {
 function showRezSidebar() {
   var html = HtmlService.createHtmlOutputFromFile('rez')
       .setTitle('Rez Form')
+      .setWidth(300);
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .showSidebar(html);
+}
+function showRentalForm() {
+  var html = HtmlService.createHtmlOutputFromFile('rental')
+      .setTitle('Rental Form')
       .setWidth(300);
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
       .showSidebar(html);
@@ -447,11 +455,12 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
   }
   return "Conflict";
 }
-function finishRental(name, date, id, hasRez) { ///finishes the rental with the given info
-  var today = new Date();
-  var endDate = new Date()
-  endDate.setMonth(parseInt(date.split('-')[1]) - 1)
-  endDate.setDate(date.split('-')[2])
+function finishRental(name, sdate, edate, id, hasRez) { ///finishes the rental with the given info
+  if(sdate === null)
+    sdate = new Date();
+  var endDate = new Date();
+  endDate.setMonth(parseInt(edate.split('-')[1]) - 1)
+  endDate.setDate(edate.split('-')[2])
   var x = [];  //holds ranges for each bike
   var conflicts = []; //holds conflicts
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals")
@@ -461,7 +470,7 @@ function finishRental(name, date, id, hasRez) { ///finishes the rental with the 
   }
   for(var i = 0; i < bikes.length; i++) {
     Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
-    x[i] = findPotential(bikes[i], name, new Date(), endDate, hasRez);
+    x[i] = findPotential(bikes[i], name, sdate, endDate, hasRez);
     if (x[i] === "Conflict") {
       conflicts.push(bikes[i].type + bikes[i].letter);
       }

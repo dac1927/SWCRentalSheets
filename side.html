@@ -113,6 +113,7 @@
       }
     }
     function reloadAll() {
+      document.getElementById("big").disabled = true;
       reload()
       document.getElementById('mainForm').reset();
     }
@@ -149,13 +150,14 @@
         var date = document.getElementById('dateinput').value
         var name = document.getElementById('nameinput').value
         var hasRez = document.getElementById('rez').checked
+        var today = null;
         var ids = [];
         for(var i = 0; i < checks.length; i++) {
           if (checks[i].checked) {
              ids[ids.length] = labels[i].getAttribute('rentalid');
           }
         }
-        google.script.run.withSuccessHandler(onSuccess).finishRental(name, date, ids, hasRez);
+        google.script.run.withSuccessHandler(onSuccess).finishRental(name,today, date, ids, hasRez);
         function onSuccess(finished) {
             if(finished) {
             reloadAll();
