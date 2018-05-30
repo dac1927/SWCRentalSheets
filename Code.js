@@ -2,11 +2,15 @@
 //get checked: var isChecked = document.getElementById('id_of_checkbox').checked; 
 //setup for the spreadsheet, mostly script properties
 function test() {
-   var html = HtmlService.createHtmlOutputFromFile('tabs')
-      .setTitle('Rental Tools')
-      .setWidth(300);
-  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
-      .showSidebar(html);
+   var bikes = [];
+   bikes.push({type: "H17", letter: ["A"], rack: [false]});
+   bikes.push({type: "H17", letter: ["B"], rack: [true]});
+   bikes.push({type: "H19", letter: ["A"], rack: [false]});
+   bikes.push({type: "H19", letter: ["B"], rack: [false]});
+   bikes.push({type: "WH19", letter: ["C"], rack: [false]});
+   Logger.log(bikes);
+   Logger.log("combining");
+   Logger.log(combineRentalBikes(bikes));
 }
 function logSomething() {
   Logger.log('something');
@@ -383,20 +387,28 @@ function hardReset() {
   resetList();
   onOpen();
 }
+function combineRentalBikes(bikes) {
+  var cbikes = [];
+  var duplicate = false;
+  Logger.log(bikes.length);
+  for(var i = 0; i < bikes.length; i ++) {
+    for(var j = 0; j < cbikes.length && !duplicate; j++) {
+      if(cbikes[j].type === bikes[i].type) {
+        duplicate = true;
+        cbikes[j].letter.push(bikes[i].letter[0]);
+        cbikes[j].rack.push(bikes[i].rack[0]);
+      }
+    }
+    if(duplicate === false)
+      cbikes.push(bikes[i]);
+    duplicate = false;
+  }
+  return cbikes;
+}
 function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
-  var bikes = null;
-  if(!(bike.rack)) {
-    bikes = retriveObject(bike.type);                    //retriving potential area w/o rack
-    var wRack = retriveObject(bike.type + "R");              //retriving potential area w/ rack
-    if(wRack !== null && bikes !== null) {   //if theres space with rack, add to the end of possibilites
-      bikes = bikes.concat(wRack);
-    }
-      else if(bikes === null)                                  //if the bike only exists w/rack, avoid concat with assignment
-      bikes = wRack;
-  }
-  else
-    bikes = retriveObject(bike.type + "R")     
+  var bikes = retriveObject(bike.type);                    //retriving potential area w/o rack
+  var wRack = retriveObject(bike.type + "R");              //retriving potential area w/ rack    
   if(bikes === null) {
     Logger.log("BIKE DOESN'T EXIST"); 
     return "Conflict"
@@ -405,50 +417,73 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
   var endID = findColumn(endDate);
   if(startID !== -1 && bikes !== null) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('rentals');
-    var totalArea = sheet.getRange(startID + bikes[0] + ':' + endID + bikes[bikes.length - 1]);
+    var nArea = sheet.getRange(startID + bikes[0] + ':' + endID + bikes[bikes.length - 1]);
+    var rArea = false;
+    var rvals = false;
+    if(wrack !== null) {
+      rArea = sheet.getRange(startID + wRack[0] + ':' + endID + wRack[wRack.length - 1]);
+      rvals = rArea.getValues();
+    }
     //totalArea.setBackgroundRGB(0, 0, 255);
-    var vals = totalArea.getValues();
+    var nvals = nArea.getValues();
     var row;
     var unused = true;
     var o = 0, d = 0;
-    var option = -1;
-    var regex = new RegExp('^' + bike.letter + ':.*' + '$');
+    var options = [];
+    var found = false;
+    var regex;
     if (hasRez) {
       var rez = false;
-      for(; o < vals.length && unused; o++) { // while more to check and && rez not found
-        rez = true;
-        for(d = 0; d < vals[o].length && rez; d++) {  //while more to check && rez is found
-          if (!(vals[o][d] === name))  //if cell isn't a rez, set to false
+      for(var b = 0; b < bike.letter.length; b++) {
+        rez = false;
+        found = false;
+        regex = new RegExp('^' + bike.letter[b] + ':.*' + '$');
+        for(; o < vals.length && unused; o++) { // while more to check and && rez not found
+          rez = true;
+          for(d = 0; d < vals[o].length && rez; d++) {  //while more to check && rez is found
+            if (!(vals[o][d] === name))  //if cell isn't a rez, set to false
             rez = false;
-          if(!(vals[o][d] === "") && (vals[o][d].match(regex))) {
-            unused = false;
-            Logger.log("Bike's ID has been found");
-          }
-        }
-        if(rez === true)
-          option = o;
-      }
-    } else {
-      var flag = false;
-      for(; o < vals.length && unused; o++) { // while more to check and && bike's letter hasn't been spotted
-        flag = true;
-        for(d = 0; d < vals[o].length && flag; d++) {  //while more to check && the cells are empty, keep checking row
-          if (!(vals[o][d] === "")) { //if cell isn't empty , set to false
-            flag = false;
-            if (vals[o][d].match(regex)) {
+            if(!(vals[o][d] === "") && (vals[o][d].match(regex))) {
               unused = false;
               Logger.log("Bike's ID has been found");
             }
           }
+          if(rez === true && unused && options.indexOf(o) === -1) {
+            options.push(o);
+            found = true;
+          }
         }
-        if(flag === true && option === -1 && unused)  //if the current row works, and a row hasn't been picked yet
-          option = o;
+        if(!found || !unused) {
+          return "Conflict";
+        }
+      }
+    } else {
+      var found = false;
+      for(var b = 0; b < bike.letter.length; b++) {
+        flag = false;
+        found = false;
+        for(; o < vals.length && unused; o++) { // while more to check and && bike's letter hasn't been spotted
+          flag = true;
+          for(d = 0; d < vals[o].length && flag; d++) {  //while more to check && the cells are empty, keep checking row
+            if (!(vals[o][d] === "")) { //if cell isn't empty , set to false
+              flag = false;
+              if (vals[o][d].match(regex)) {
+                unused = false;
+                Logger.log("Bike's ID has been found");
+              }
+            }
+          }
+          if(flag === true && !found && unused && options.indexOf(o) === -1) { //if the current row works, and a row hasn't been picked yet
+            found = true;
+            options.push(o);
+          }
+        }
+        if(!found || !unused) {
+          return "Conflict";
+        }
       }
     }
     Logger.log("option: " + option);
-    if(option === -1 || !unused) {
-      return "Conflict";
-    }
     var chosenArea = sheet.getRange(startID + bikes[option] + ':' + endID + bikes[option]);
     //chosenArea.setBackgroundRGB(0, 255, 0);
     return chosenArea;
