@@ -8,9 +8,11 @@ function test() {
    bikes.push({type: "H19", letter: ["A"], rack: [false]});
    bikes.push({type: "H19", letter: ["B"], rack: [false]});
    bikes.push({type: "WH19", letter: ["C"], rack: [false]});
-   Logger.log(bikes);
-   Logger.log("combining");
-   Logger.log(combineRentalBikes(bikes));
+   bikes.push({type: "WH19", letter: ["D"], rack: [false]});
+   var combined = combineRentalBikes(bikes);
+   var date = new Date();
+   for(var i = 0; i < combined.length; i++)
+    findPotential(combined[i], "Devin", date, date, false);
 }
 function logSomething() {
   Logger.log('something');
@@ -390,7 +392,6 @@ function hardReset() {
 function combineRentalBikes(bikes) {
   var cbikes = [];
   var duplicate = false;
-  Logger.log(bikes.length);
   for(var i = 0; i < bikes.length; i ++) {
     for(var j = 0; j < cbikes.length && !duplicate; j++) {
       if(cbikes[j].type === bikes[i].type) {
@@ -407,36 +408,48 @@ function combineRentalBikes(bikes) {
 }
 function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
+  Logger.log("Bike: " + bike.type + " " + bike.letter)
   var bikes = retriveObject(bike.type);                    //retriving potential area w/o rack
-  var wRack = retriveObject(bike.type + "R");              //retriving potential area w/ rack    
-  if(bikes === null) {
+  var wRack = retriveObject(bike.type + "R");              //retriving potential area w/ rack  
+  var rackIndex = -1;  
+  if(bikes === null && wRack === null) {
     Logger.log("BIKE DOESN'T EXIST"); 
     return "Conflict"
-  }      
+  } else if (bikes === null && wRack !== null) {
+    bikes = wRack;
+  } else {  //if the bike must have rack and non rack options, note where racked bikes start and concatenate
+    rackIndex = bikes.length
+    bikes = bikes.concat(wRack);
+  }
   var startID = findColumn(startDate);
   var endID = findColumn(endDate);
-  if(startID !== -1 && bikes !== null) {
+  if(startID !== -1) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('rentals');
-    var nArea = sheet.getRange(startID + bikes[0] + ':' + endID + bikes[bikes.length - 1]);
+    var nArea = sheet.getRange(startID + bikes[0] + ':' + endID +  bikes[bikes.length - 1]);
     var rArea = false;
     var rvals = false;
-    if(wrack !== null) {
-      rArea = sheet.getRange(startID + wRack[0] + ':' + endID + wRack[wRack.length - 1]);
+    if(wRack !== null && rackIndex !== -1) {
+      rArea = sheet.getRange(startID + bikes[rackIndex] + ':' + endID + bikes[bikes.length - 1]);
       rvals = rArea.getValues();
+      rArea.setBackgroundRGB(255, 0, 0);
     }
-    //totalArea.setBackgroundRGB(0, 0, 255);
+    nArea.setBackgroundRGB(0, 0, 255);
     var nvals = nArea.getValues();
+    var vals = nvals;
     var row;
     var unused = true;
     var o = 0, d = 0;
     var options = [];
     var found = false;
     var regex;
+    var length;
     if (hasRez) {
+      Logger.log("Rez mode")
       var rez = false;
       for(var b = 0; b < bike.letter.length; b++) {
         rez = false;
         found = false;
+        o = (bike.rack[b] ? rackIndex : 0 );
         regex = new RegExp('^' + bike.letter[b] + ':.*' + '$');
         for(; o < vals.length && unused; o++) { // while more to check and && rez not found
           rez = true;
@@ -453,15 +466,21 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
             found = true;
           }
         }
-        if(!found || !unused) {
-          return "Conflict";
+        if(!found) {
+          options.push("Conflict");
+        } else if (!unused) {
+          options.pop();
+          options.push("Conflict");
         }
       }
     } else {
+      Logger.log("Rental mode");
       var found = false;
       for(var b = 0; b < bike.letter.length; b++) {
+        regex = new RegExp('^' + bike.letter[b] + ':.*' + '$');
         flag = false;
         found = false;
+        o = (bike.rack[b] ? rackIndex : 0 );
         for(; o < vals.length && unused; o++) { // while more to check and && bike's letter hasn't been spotted
           flag = true;
           for(d = 0; d < vals[o].length && flag; d++) {  //while more to check && the cells are empty, keep checking row
@@ -474,21 +493,37 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
             }
           }
           if(flag === true && !found && unused && options.indexOf(o) === -1) { //if the current row works, and a row hasn't been picked yet
-            found = true;
+            Logger.log(o)
             options.push(o);
+            found = true;
+          } else {
+            Logger.log("i : " + options.indexOf(o))
           }
         }
-        if(!found || !unused) {
-          return "Conflict";
+        if(!found) {
+          options.push("Conflict");
+        } else if (!unused) {
+          options.pop();
+          options.push("Conflict");
         }
       }
     }
-    Logger.log("option: " + option);
-    var chosenArea = sheet.getRange(startID + bikes[option] + ':' + endID + bikes[option]);
-    //chosenArea.setBackgroundRGB(0, 255, 0);
+    Logger.log("Options, if any")
+    for(var c = 0; c < options.length; c++) {
+      Logger.log("option " + c + ": " + options[c]);
+    }
+    var chosenArea = [];
+    for(var q = 0; q < options.length; q++) {
+      if(options[q] !== "Conflict") {
+      chosenArea.push(sheet.getRange(startID + bikes[options[q]] + ':' + endID + bikes[options[q]]));
+      chosenArea[q].setBackgroundRGB(0, 255, 0);
+      } else {
+        chosenArea.push("Conflict")
+      }
+    }
     return chosenArea;
   }
-  return "Conflict";
+  return ["Conflict"];
 }
 function inputBikes(name, sdate, edate, bikes, hasRez) {
   var endDate = new Date();
