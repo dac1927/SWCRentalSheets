@@ -548,8 +548,10 @@ function inputBikes(name, sdate, edate, bikes, hasRez) {
   for(var i = 0; i < bikes.length; i++) {
     Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
     x[i] = findPotential(bikes[i], name, startDate, endDate, hasRez);
-    if (x[i].indexOf("Conflict") !== -1) {
-      conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")]);
+    while (x[i].indexOf("Conflict") !== -1) {
+      conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")] + (bikes[i].rack[x[i].indexOf("Conflict")] ? "R" : ""));
+      x[i].splice(x[i].indexOf("Conflict"), 1, "X");
+      Logger.log(x[i])
     }
   }
   if (conflicts.length == 0) {
@@ -585,8 +587,9 @@ function finishRental(name, sdate, edate, id, hasRez) { ///finishes the rental w
   for(var i = 0; i < bikes.length; i++) {
     Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
     x[i] = findPotential(bikes[i], name, sdate, endDate, hasRez);
-    if (x[i].indexOf("Conflict") !== -1) {
-      conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")]);
+    while (x[i].indexOf("Conflict") !== -1) {
+      conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")] + (bikes[i].rack[x[i].indexOf("Conflict")] ? "R" : ""));
+      x[i].splice(x[i].indexOf("Conflict"), 1, "X");
     }
   }
   if (conflicts.length == 0) {
@@ -630,13 +633,18 @@ function finishRez(name, sDate, eDate, bikeStrings) {
   }
   bikes = combineRentalBikes(bikes);
   var x = [], conflicts = [];
+  var w = 0;
   for(var i = 0; i < bikes.length; i++) {
+    Logger.log(bikes[i]);
     x[i] = findPotential(bikes[i], name, startDate, endDate, false);
-    if (x[i].indexOf("Conflict") !== -1) {
-      conflicts.push(bikes[i].type);
+    while (x[i].indexOf("Conflict") !== -1 && w < 10) {
+      conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")] + (bikes[i].rack[x[i].indexOf("Conflict")] ? "R" : ""));
+      x[i].splice(x[i].indexOf("Conflict"), 1, "X");
+      Logger.log(x[i])
+      w++;
     }
+    w = 0;
   }
-  Logger.log(conflicts);
   if (conflicts.length == 0) {
     for(var i = 0; i < x.length; i ++) {
       for(var b = 0; b < x.length; b ++)
