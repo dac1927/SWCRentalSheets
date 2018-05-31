@@ -626,19 +626,21 @@ function finishRez(name, sDate, eDate, bikeStrings) {
     rack = regex1.test(bikeStrings[i]);
     if (rack)
       bikeStrings[i] = bikeStrings[i].substr(0,bikeStrings[i].length - 1);
-    bikes.push({type:  bikeStrings[i], letter: "", rack: rack});
+    bikes.push({type:  bikeStrings[i], letter: [""], rack: [rack]});
   }
+  bikes = combineRentalBikes(bikes);
   var x = [], conflicts = [];
   for(var i = 0; i < bikes.length; i++) {
     x[i] = findPotential(bikes[i], name, startDate, endDate, false);
-    if (x[i] === "Conflict") {
-      conflicts.push(bikes[i].type + bikes[i].letter);
-      }
+    if (x[i].indexOf("Conflict") !== -1) {
+      conflicts.push(bikes[i].type);
+    }
   }
   Logger.log(conflicts);
   if (conflicts.length == 0) {
     for(var i = 0; i < x.length; i ++) {
-      x[i].setValue(name);
+      for(var b = 0; b < x.length; b ++)
+        x[i][b].setValue(name);
     }
     return true;
   } else {
