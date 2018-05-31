@@ -38,6 +38,7 @@ function onOpen() {
     }
     storeObject('IDLIST', idList);           //store the id list
     storeObject('IDCOUNTER', 0);
+    storeObject("ALERT", true);
     var columnDict = {String : String};      //dictionary for column labels/position
     var rowDict = {String : String};         //dictionary for row labels
     var temp;
@@ -87,6 +88,73 @@ function onOpen() {
     colorToday();
 
 }
+function onEdit(e) {
+  var sheet = SpreadsheetApp.getActiveSheet();
+  if (sheet.getName() == "input" && sheet.getActiveRange().getColumn() == 1) {
+    var i = -1;
+    var erange = e.range.getValues();
+    sheet.getRange(e.range.getA1Notation()).setValue("").activate();
+    var rm = 0;
+    var ct = 0;
+    var id;
+    var idList;
+    var raw, split;
+    while (erange[ct]) {
+        var letter = "J"
+        rm = 0;
+      if (erange[ct][0][0] == "S") {
+        rm = 2;
+        switch(erange[ct][0][1]) {
+          case "1":
+           letter = "B"
+           break;
+          case "2":
+           letter = "C"
+           break;
+          case "3":
+           letter = "D"
+           break;
+          case "4":
+           letter = "E"
+           break;
+          default:
+           letter = "J"
+           rm = 0;
+        }
+      }
+      i = nextEmptyCell(sheet.getRange(letter + ":" + letter));
+      if(erange[ct][0].substr(2) == "TOGGLE") { //TODO: and not in checkout mode
+        var b = sheet.getRange(letter + "2:" + letter + String(i.toFixed(0)));
+        if(!b.isBlank()) {
+        id = guid();
+        idList = retriveObject("IDLIST");
+        idList.push(id);
+        storeObject("IDLIST",idList);
+        raw = b.getValues().join().split(',').filter(Boolean);//new syntax: H19:A-R
+        var bikeList = [];
+        var bikeTemp;
+        for(var a = 0; a < raw.length; a++) {
+           split = raw[a].split(/:|-/);    //splitting id into it's components
+           bikeTemp = {type: split[0], letter: [split[1]], rack: [(split[2] ? true : false)]};
+           bikeList.push(bikeTemp); //adding the bike to the list
+        }
+        storeObject(id, bikeList);                 //storing the list
+        sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
+        }
+      } else {  //TODO else if checkout mode, checkout bike && ignore toggle then this vv else
+      sheet.getRange(letter + String(i.toFixed(0)) +":" + letter + String(i.toFixed(0))).setValue(erange[ct][0].substr(rm));
+      }
+      ct++;
+   }
+ } else if(sheet.getName() == "rentals" && sheet.getActiveRange().getColumn() == 1) {
+    var alert = retriveObject("ALERT");
+    if(alert) {
+      var ui = SpreadsheetApp.getUi();
+      var response = ui.alert("After you've finished editing the key section, please reload the page.")
+    }
+    storeObject("ALERT", false);
+ }
+}
 //functions with auto triggers
 function addUI() {
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
@@ -122,66 +190,6 @@ function showRentalForm() {
 //INGEST ##################################################################################################################################################
 function checkIn(bike) {
   
-}
-function onEdit(e) {
-   var sheet = SpreadsheetApp.getActiveSheet();
-   if (sheet.getName() == "input" && sheet.getActiveRange().getColumn() == 1) {
-     var i = -1;
-     var erange = e.range.getValues();
-     sheet.getRange(e.range.getA1Notation()).setValue("").activate();
-     var rm = 0;
-     var ct = 0;
-     var id;
-     var idList;
-     var raw, split;
-     while (erange[ct]) {
-         var letter = "J"
-         rm = 0;
-       if (erange[ct][0][0] == "S") {
-         rm = 2;
-         switch(erange[ct][0][1]) {
-           case "1":
-            letter = "B"
-            break;
-           case "2":
-            letter = "C"
-            break;
-           case "3":
-            letter = "D"
-            break;
-           case "4":
-            letter = "E"
-            break;
-           default:
-            letter = "J"
-            rm = 0;
-         }
-       }
-       i = nextEmptyCell(sheet.getRange(letter + ":" + letter));
-       if(erange[ct][0].substr(2) == "TOGGLE") { //TODO: and not in checkout mode
-         var b = sheet.getRange(letter + "2:" + letter + String(i.toFixed(0)));
-         if(!b.isBlank()) {
-         id = guid();
-         idList = retriveObject("IDLIST");
-         idList.push(id);
-         storeObject("IDLIST",idList);
-         raw = b.getValues().join().split(',').filter(Boolean);//new syntax: H19:A-R
-         var bikeList = [];
-         var bikeTemp;
-         for(var a = 0; a < raw.length; a++) {
-            split = raw[a].split(/:|-/);    //splitting id into it's components
-            bikeTemp = {type: split[0], letter: [split[1]], rack: [(split[2] ? true : false)]};
-            bikeList.push(bikeTemp); //adding the bike to the list
-         }
-         storeObject(id, bikeList);                 //storing the list
-         sheet.getRange(letter + "2:" + letter + String(i.toFixed(0))).clear();
-         }
-       } else {  //TODO else if checkout mode, checkout bike && ignore toggle then this vv else
-       sheet.getRange(letter + String(i.toFixed(0)) +":" + letter + String(i.toFixed(0))).setValue(erange[ct][0].substr(rm));
-       }
-       ct++;
-    }
-  }
 }
 //class descriptions?
 function Bike(idInput) {
@@ -384,6 +392,7 @@ function showSidebar() {
 function resetList() {
   storeObject("IDLIST", [])
   storeObject("IDCOUNTER", 0)
+  storObject("ALERT", true)
 }
 function hardReset() {
   resetList();
