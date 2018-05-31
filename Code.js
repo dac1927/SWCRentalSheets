@@ -532,19 +532,30 @@ function inputBikes(name, sdate, edate, bikes, hasRez) {
   endDate.setDate(edate.split('-')[2]);
   startDate.setMonth(parseInt(sdate.split('-')[1]) - 1);
   startDate.setDate(sdate.split('-')[2]);
+  var regex1 = new RegExp('^.*R$');
+  for(var i = 0; i < bikes.length; i++) {
+    if (regex1.test(bikes[i].type)) {
+      bikes[i].type = bikes[i].type.substr(0,bikes[i].type.length - 1);
+      bikes[i].rack[0] = true;
+    }
+  }
+  Logger.log(bikes);
+  bikes = combineRentalBikes(bikes);
+  Logger.log(bikes);
   var x = [];  //holds ranges for each bike
   var conflicts = []; //holds conflicts
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals")
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals");
   for(var i = 0; i < bikes.length; i++) {
     Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
     x[i] = findPotential(bikes[i], name, startDate, endDate, hasRez);
-    if (x[i] === "Conflict") {
-      conflicts.push(bikes[i].type + bikes[i].letter);
-      }
+    if (x[i].indexOf("Conflict") !== -1) {
+      conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")]);
+    }
   }
   if (conflicts.length == 0) {
     for(var i = 0; i < x.length; i ++) {
-      x[i].setValue(bikes[i].letter + ":" + name);
+      for(var b = 0; b < x[i].length; b++) 
+        x[i][b].setValue(bikes[i].letter[b] + ":" + name);
     }
     return true;
   } else {
@@ -576,7 +587,7 @@ function finishRental(name, sdate, edate, id, hasRez) { ///finishes the rental w
     x[i] = findPotential(bikes[i], name, sdate, endDate, hasRez);
     if (x[i].indexOf("Conflict") !== -1) {
       conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")]);
-      }
+    }
   }
   if (conflicts.length == 0) {
     for(var i = 0; i < x.length; i ++) {

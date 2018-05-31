@@ -496,7 +496,7 @@ function submitForm() {
   var bikeTemp;
   for(var i = 0; i < check.length; i++) {
     if(check[i].checked) {
-      bikeTemp = {type: type[i].options[type[i].selectedIndex].value + size[i].options[size[i].selectedIndex].value, letter: letters[i].value, rack: false};
+      bikeTemp = {type: type[i].options[type[i].selectedIndex].value + size[i].options[size[i].selectedIndex].value, letter: [letters[i].value], rack: [false]};
       bikes.push(bikeTemp);
     }
   }
