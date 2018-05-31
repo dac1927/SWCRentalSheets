@@ -408,13 +408,11 @@ function combineRentalBikes(bikes) {
 }
 function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, name on rental/rez, endDate(startDate is assumed to be today)
 { 
-  Logger.log("Bike: " + bike.type + " " + bike.letter)
   var bikes = retriveObject(bike.type);                    //retriving potential area w/o rack
   var wRack = retriveObject(bike.type + "R");              //retriving potential area w/ rack  
   var rackIndex = -1;  
   if(bikes === null && wRack === null) {
-    Logger.log("BIKE DOESN'T EXIST"); 
-    return "Conflict"
+    return ["Conflict"]
   } else if (bikes === null && wRack !== null) {
     bikes = wRack;
   } else {  //if the bike must have rack and non rack options, note where racked bikes start and concatenate
@@ -431,9 +429,7 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
     if(wRack !== null && rackIndex !== -1) {
       rArea = sheet.getRange(startID + bikes[rackIndex] + ':' + endID + bikes[bikes.length - 1]);
       rvals = rArea.getValues();
-      rArea.setBackgroundRGB(255, 0, 0);
     }
-    nArea.setBackgroundRGB(0, 0, 255);
     var nvals = nArea.getValues();
     var vals = nvals;
     var row;
@@ -444,7 +440,6 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
     var regex;
     var length;
     if (hasRez) {
-      Logger.log("Rez mode")
       var rez = false;
       for(var b = 0; b < bike.letter.length; b++) {
         rez = false;
@@ -458,7 +453,6 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
             rez = false;
             if(!(vals[o][d] === "") && (vals[o][d].match(regex))) {
               unused = false;
-              Logger.log("Bike's ID has been found");
             }
           }
           if(rez === true && unused && options.indexOf(o) === -1) {
@@ -474,7 +468,6 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
         }
       }
     } else {
-      Logger.log("Rental mode");
       var found = false;
       for(var b = 0; b < bike.letter.length; b++) {
         regex = new RegExp('^' + bike.letter[b] + ':.*' + '$');
@@ -488,17 +481,13 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
               flag = false;
               if (vals[o][d].match(regex)) {
                 unused = false;
-                Logger.log("Bike's ID has been found");
               }
             }
           }
           if(flag === true && !found && unused && options.indexOf(o) === -1) { //if the current row works, and a row hasn't been picked yet
-            Logger.log(o)
             options.push(o);
             found = true;
-          } else {
-            Logger.log("i : " + options.indexOf(o))
-          }
+          } else {          }
         }
         if(!found) {
           options.push("Conflict");
@@ -508,15 +497,12 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
         }
       }
     }
-    Logger.log("Options, if any")
     for(var c = 0; c < options.length; c++) {
-      Logger.log("option " + c + ": " + options[c]);
     }
     var chosenArea = [];
     for(var q = 0; q < options.length; q++) {
       if(options[q] !== "Conflict") {
       chosenArea.push(sheet.getRange(startID + bikes[options[q]] + ':' + endID + bikes[options[q]]));
-      chosenArea[q].setBackgroundRGB(0, 255, 0);
       } else {
         chosenArea.push("Conflict")
       }
@@ -539,19 +525,15 @@ function inputBikes(name, sdate, edate, bikes, hasRez) {
       bikes[i].rack[0] = true;
     }
   }
-  Logger.log(bikes);
   bikes = combineRentalBikes(bikes);
-  Logger.log(bikes);
   var x = [];  //holds ranges for each bike
   var conflicts = []; //holds conflicts
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals");
   for(var i = 0; i < bikes.length; i++) {
-    Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
     x[i] = findPotential(bikes[i], name, startDate, endDate, hasRez);
     while (x[i].indexOf("Conflict") !== -1) {
       conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")] + (bikes[i].rack[x[i].indexOf("Conflict")] ? "R" : ""));
       x[i].splice(x[i].indexOf("Conflict"), 1, "X");
-      Logger.log(x[i])
     }
   }
   if (conflicts.length == 0) {
@@ -585,7 +567,6 @@ function finishRental(name, sdate, edate, id, hasRez) { ///finishes the rental w
   }
   bikes = combineRentalBikes(bikes);
   for(var i = 0; i < bikes.length; i++) {
-    Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
     x[i] = findPotential(bikes[i], name, sdate, endDate, hasRez);
     while (x[i].indexOf("Conflict") !== -1) {
       conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")] + (bikes[i].rack[x[i].indexOf("Conflict")] ? "R" : ""));
@@ -633,17 +614,13 @@ function finishRez(name, sDate, eDate, bikeStrings) {
   }
   bikes = combineRentalBikes(bikes);
   var x = [], conflicts = [];
-  var w = 0;
   for(var i = 0; i < bikes.length; i++) {
-    Logger.log(bikes[i]);
     x[i] = findPotential(bikes[i], name, startDate, endDate, false);
-    while (x[i].indexOf("Conflict") !== -1 && w < 10) {
+    while (x[i].indexOf("Conflict") !== -1) {
       conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")] + (bikes[i].rack[x[i].indexOf("Conflict")] ? "R" : ""));
       x[i].splice(x[i].indexOf("Conflict"), 1, "X");
-      Logger.log(x[i])
       w++;
     }
-    w = 0;
   }
   if (conflicts.length == 0) {
     for(var i = 0; i < x.length; i ++) {
