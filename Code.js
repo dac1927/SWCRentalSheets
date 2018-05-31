@@ -170,7 +170,7 @@ function onEdit(e) {
          var bikeTemp;
          for(var a = 0; a < raw.length; a++) {
             split = raw[a].split(/:|-/);    //splitting id into it's components
-            bikeTemp = {type: split[0], letter: split[1], rack: (split[2] ? true : false)};
+            bikeTemp = {type: split[0], letter: [split[1]], rack: [(split[2] ? true : false)]};
             bikeList.push(bikeTemp); //adding the bike to the list
          }
          storeObject(id, bikeList);                 //storing the list
@@ -570,16 +570,18 @@ function finishRental(name, sdate, edate, id, hasRez) { ///finishes the rental w
   for(var i = 0; i < id.length; i++) {
     bikes.push.apply(bikes , retriveObject(id[i]));
   }
+  bikes = combineRentalBikes(bikes);
   for(var i = 0; i < bikes.length; i++) {
     Logger.log("Bike obj used in fcn: " + bikes[i].type + bikes[i].letter + " " + bikes[i].rack);
     x[i] = findPotential(bikes[i], name, sdate, endDate, hasRez);
-    if (x[i] === "Conflict") {
-      conflicts.push(bikes[i].type + bikes[i].letter);
+    if (x[i].indexOf("Conflict") !== -1) {
+      conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")]);
       }
   }
   if (conflicts.length == 0) {
     for(var i = 0; i < x.length; i ++) {
-      x[i].setValue(bikes[i].letter + ":" + name);
+      for(var b = 0; b < x[i].length; b++) 
+        x[i][b].setValue(bikes[i].letter[b] + ":" + name);
     }
     var idList = retriveObject('IDLIST');
     for(var i = 0; i < id.length; i++) {
