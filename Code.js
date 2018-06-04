@@ -204,7 +204,7 @@ function findColumn(dateInput) {
 function findRow(mode, bikeInput) {
     var b
     if(mode == 'rental')
-      return ((b = parseInt(PropertiesService.getScriptProperties().getProperty(bikeInput))) === 'undefined' ? -1: b).toFixed(0);
+      return ((b = parseInt(PropertiesService.getScriptProperties().getProperty(bikeInput), 10)) === 'undefined' ? -1: b).toFixed(0);
     return retriveObject(bikeInput);
     
 }
@@ -523,10 +523,10 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
 function inputBikes(name, sdate, edate, bikes, hasRez) {
   var endDate = new Date();
   var startDate = new Date();
-  endDate.setMonth(parseInt(edate.split('-')[1]) - 1);
-  endDate.setDate(edate.split('-')[2]);
-  startDate.setMonth(parseInt(sdate.split('-')[1]) - 1);
-  startDate.setDate(sdate.split('-')[2]);
+  endDate.setMonth(parseInt(edate.split('-')[1], 10) - 1);
+  endDate.setDate(parseInt(edate.split('-')[2], 10));
+  startDate.setMonth(parseInt(sdate.split('-')[1], 10) - 1);
+  startDate.setDate(parseInt(sdate.split('-')[2], 10));
   var regex1 = new RegExp('^.*R$');
   for(var i = 0; i < bikes.length; i++) {
     if (regex1.test(bikes[i].type)) {
@@ -565,8 +565,8 @@ function finishRental(name, sdate, edate, id, hasRez) { ///finishes the rental w
   if(sdate === null)
     sdate = new Date();
   var endDate = new Date();
-  endDate.setMonth(parseInt(edate.split('-')[1]) - 1)
-  endDate.setDate(edate.split('-')[2])
+  endDate.setMonth(parseInt(edate.split('-')[1], 10) - 1)
+  endDate.setDate(parseInt(edate.split('-')[2], 10))
   var x = [];  //holds ranges for each bike
   var conflicts = []; //holds conflicts
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals")
@@ -608,10 +608,10 @@ function finishRental(name, sdate, edate, id, hasRez) { ///finishes the rental w
 function finishRez(name, sDate, eDate, bikeStrings) {
   var startDate = new Date();
   var endDate = new Date();
-  endDate.setMonth(parseInt(eDate.split('-')[1]) - 1);
-  endDate.setDate(eDate.split('-')[2]);
-  startDate.setMonth(parseInt(sDate.split('-')[1]) - 1);
-  startDate.setDate(sDate.split('-')[2]);
+  endDate.setMonth(parseInt(eDate.split('-')[1], 10) - 1);
+  endDate.setDate(parseInt(eDate.split('-')[2], 10));
+  startDate.setMonth(parseInt(sDate.split('-')[1], 10) - 1);
+  startDate.setDate(sDate.split('-')[2], 10);
   var bikes = [];
   var rack;
   var regex1 = new RegExp('^.*R$');
