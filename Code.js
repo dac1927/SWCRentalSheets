@@ -392,7 +392,7 @@ function showSidebar() {
 function resetList() {
   storeObject("IDLIST", [])
   storeObject("IDCOUNTER", 0)
-  storObject("ALERT", true)
+  storeObject("ALERT", true)
 }
 function hardReset() {
   resetList();
