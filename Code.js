@@ -424,7 +424,7 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
     return ["Conflict"]
   } else if (bikes === null && wRack !== null) {
     bikes = wRack;
-  } else {  //if the bike must have rack and non rack options, note where racked bikes start and concatenate
+  } else if (wRack !== null){  //if the bike must have rack and non rack options, note where racked bikes start and concatenate
     rackIndex = bikes.length
     bikes = bikes.concat(wRack);
   }
