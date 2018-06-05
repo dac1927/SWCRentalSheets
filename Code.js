@@ -628,12 +628,11 @@ function finishRez(name, sDate, eDate, bikeStrings) {
     while (x[i].indexOf("Conflict") !== -1) {
       conflicts.push(bikes[i].type + bikes[i].letter[x[i].indexOf("Conflict")] + (bikes[i].rack[x[i].indexOf("Conflict")] ? "R" : ""));
       x[i].splice(x[i].indexOf("Conflict"), 1, "X");
-      w++;
     }
   }
   if (conflicts.length == 0) {
     for(var i = 0; i < x.length; i ++) {
-      for(var b = 0; b < x.length; b ++)
+      for(var b = 0; b < x[i].length; b ++)
         x[i][b].setValue(name);
     }
     return true;
