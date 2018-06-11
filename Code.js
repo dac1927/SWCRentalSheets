@@ -1,4 +1,4 @@
-//TODO line 128~
+//VERSION: 1.11
 //get checked: var isChecked = document.getElementById('id_of_checkbox').checked; 
 //setup for the spreadsheet, mostly script properties
 function test() {
