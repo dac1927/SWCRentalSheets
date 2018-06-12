@@ -132,7 +132,7 @@ function onEdit(e) {
         idList = retriveObject("IDLIST");
         idList.push(id);
         storeObject("IDLIST",idList);
-        raw = b.getValues().join().split(',').filter(Boolean);//new syntax: H19:A-R
+        raw = b.getValues().join().split(',').filter(Boolean);//new syntax: H19A-R
         var bikeList = [];
         var bikeTemp;
         for(var a = 0; a < raw.length; a++) {
@@ -190,9 +190,6 @@ function showRentalForm() {
 }
 //end of setup!
 //INGEST ##################################################################################################################################################
-function checkIn(bike) {
-  
-}
 //class descriptions?
 function Bike(idInput) {
   var id = idInput;
