@@ -135,9 +135,14 @@ function onEdit(e) {
         raw = b.getValues().join().split(',').filter(Boolean);//new syntax: H19A-R
         var bikeList = [];
         var bikeTemp;
+        var typeRegex = RegExp('^(H|WH|M|HS|WC|C|29|RB|CX)([0-9]{2}.[0-9]|[0-9]{2}|[SML])');
+        var letterRegex = RegExp('([A-Z]|[A-Z]-R)$');
+        var rackRegex = RegExp('-R$');
         for(var a = 0; a < raw.length; a++) {
-           split = raw[a].split(/:|-/);    //splitting id into it's components
-           bikeTemp = {type: split[0], letter: [split[1]], rack: [(split[2] ? true : false)]};
+           typeString = typeRegex.exec(raw[a]);   //splitting id into it's components
+           letterString = letterRegex.exec(raw[a]);
+           Logger.log("raw: " + raw[a] + "type:" + typeString[0] + " letter: " + letterString[0].charAt(0) + "rack: " +  rackRegex.test(letterString[0]));
+           bikeTemp = {type: typeString[0], letter: letterString[0].charAt(0), rack: rackRegex.test(letterString[0])};
            bikeList.push(bikeTemp); //adding the bike to the list
         }
         storeObject(id, bikeList);                 //storing the list
