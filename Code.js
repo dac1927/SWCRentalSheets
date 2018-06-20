@@ -353,7 +353,7 @@ function createSplitRentals(rentals) { //performs the split
     r1[0].push(bIdO.bikes[bIdO.ids.indexOf(rentals.checked[i])]);
   }
   for(var i = 0; i < rentals.unchecked.length; i++ ) {//adding bikes to r2 using ids marked unchecked
-    r2[1].push(bIdO.bikes[bIdO.ids.indexOf(rentals.unchecked[i])]);
+    r1[1].push(bIdO.bikes[bIdO.ids.indexOf(rentals.unchecked[i])]);
   }
   var idList = retriveObject('IDLIST');
   var oldIds = retriveObject('splitRIds');
