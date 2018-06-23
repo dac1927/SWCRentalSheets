@@ -1,4 +1,4 @@
-//VERSION: 1.11
+//VERSION: 1.12
 //BIKE TYPE/SIZE regex: /(^(H|WH|M|HS|WC|C|29|RB|CX)([0-9]{2}.[0-9]|[0-9]{2}|[SML]))/
 //BIKE LETTER regex: /([A-Z]|[A-Z]-R)$/
 //get checked: var isChecked = document.getElementById('id_of_checkbox').checked; 
