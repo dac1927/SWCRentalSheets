@@ -459,7 +459,7 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
         found = false;
         o = (bike.rack[b] ? rackIndex : 0 );
         regex = new RegExp('^' + bike.letter[b] + ':.*' + '$');
-        for(; o < vals.length && unused; o++) { // while more to check and && rez not found
+        for(; o < vals.length && unused && !found; o++) { // while more to check and && rez not found
           rez = true;
           for(d = 0; d < vals[o].length && rez; d++) {  //while more to check && rez is found
             if (!(vals[o][d] === name))  //if cell isn't a rez, set to false
@@ -476,7 +476,7 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
         if(!found) {
           options.push("Conflict");
         } else if (!unused) {
-          options.pop();
+          options.pop();//pop off old option
           options.push("Conflict");
         }
       }
@@ -509,8 +509,6 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
           options.push("Conflict");
         }
       }
-    }
-    for(var c = 0; c < options.length; c++) {
     }
     var chosenArea = [];
     for(var q = 0; q < options.length; q++) {
