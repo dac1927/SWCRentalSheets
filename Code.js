@@ -127,6 +127,7 @@ function onEdit(e) {
       }
       sleep(2000);
       i = nextEmptyCell(sheet.getRange(letter + ":" + letter));
+      Logger.log(i)
       if(erange[ct][0].substr(2) == "TOGGLE") { //TODO: and not in checkout mode
         var b = sheet.getRange(letter + "2:" + letter + String(i.toFixed(0)));
         if(!b.isBlank()) {
