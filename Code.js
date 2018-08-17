@@ -126,7 +126,7 @@ function onEdit(e) {
         }
       }
       Logger.log("Before sleep")
-      sleep(2000);
+      Utilities.sleep(2000);
       Logger.log("after sleep")
       i = nextEmptyCell(sheet.getRange(letter + ":" + letter));
       Logger.log("next empty" + i)
