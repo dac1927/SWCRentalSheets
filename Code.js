@@ -91,6 +91,7 @@ function onOpen() {
 
 }
 function onEdit(e) {
+  Logger.log(e.range.getA1Notation());
   var sheet = SpreadsheetApp.getActiveSheet();
   if (sheet.getName() == "input" && sheet.getActiveRange().getColumn() == 1) {
     var i = -1;
