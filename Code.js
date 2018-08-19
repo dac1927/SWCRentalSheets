@@ -95,8 +95,10 @@ function onEdit(e) {
   var sheet = SpreadsheetApp.getActiveSheet();
   if (sheet.getName() == "input" && sheet.getActiveRange().getColumn() == 1) {
     var i = -1;
-    var erange = e.range.getValues();
-    sheet.getRange(e.range.getA1Notation()).setValue("").activate();
+    Utilities.sleep(500)
+    var wholeRange = sheet.getRange("A1:A" + nextEmptyCell(sheet.getRange("A:A")));
+    var erange = wholeRange.getValues();
+    sheet.getRange(wholeRange.getA1Notation()).setValue("").activate();
     var rm = 0;
     var ct = 0;
     var id;
@@ -125,9 +127,6 @@ function onEdit(e) {
            rm = 0;
         }
       }
-      Logger.log("Before sleep")
-      Utilities.sleep(2000);
-      Logger.log("after sleep")
       i = nextEmptyCell(sheet.getRange(letter + ":" + letter));
       Logger.log("next empty" + i)
       if(erange[ct][0].substr(2) == "TOGGLE") { //TODO: and not in checkout mode
