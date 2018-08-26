@@ -142,7 +142,7 @@ function onEdit(e) {
            typeString = typeRegex.exec(raw[a]);   //splitting id into it's components
            letterString = letterRegex.exec(raw[a]);
            Logger.log("raw: " + raw[a] + "type:" + typeString[0] + " letter: " + letterString[0].charAt(0) + "rack: " +  rackRegex.test(letterString[0]));
-           bikeTemp = {type: typeString[0], letter: [letterString[0].charAt(0)], rack: rackRegex.test(letterString[0])};
+           bikeTemp = {type: typeString[0], letter: [letterString[0].charAt(0)], rack: [rackRegex.test(letterString[0])]};
            bikeList.push(bikeTemp); //adding the bike to the list
         }
         storeObject(id, bikeList);                 //storing the list
