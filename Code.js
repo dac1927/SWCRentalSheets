@@ -7,10 +7,6 @@ function test() {
    var bikes = [];
    bikes.push({type: "H17", letter: ["A"], rack: [false]});
    bikes.push({type: "H17", letter: ["B"], rack: [true]});
-   bikes.push({type: "H19", letter: ["A"], rack: [false]});
-   bikes.push({type: "H19", letter: ["B"], rack: [false]});
-   bikes.push({type: "WH19", letter: ["C"], rack: [false]});
-   bikes.push({type: "WH19", letter: ["D"], rack: [false]});
    var combined = combineRentalBikes(bikes);
    var date = new Date();
    for(var i = 0; i < combined.length; i++)
@@ -409,7 +405,8 @@ function hardReset() {
 function combineRentalBikes(bikes) {
   var cbikes = [];
   var duplicate = false;
-  for(var i = 0; i < bikes.length; i ++) {
+  cbikes.push(bikes[0]);//bug fix try 1
+  for(var i = 1; i < bikes.length; i ++) {
     for(var j = 0; j < cbikes.length && !duplicate; j++) {
       if(cbikes[j].type === bikes[i].type) {
         duplicate = true;
@@ -440,6 +437,7 @@ function findPotential(bike, name, startDate, endDate, hasRez) //desired bike, n
   var endID = findColumn(endDate);
   if(startID !== -1) {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('rentals');
+    Logger.log(startID + bikes[0] + ':' + endID +  bikes[bikes.length - 1])
     var nArea = sheet.getRange(startID + bikes[0] + ':' + endID +  bikes[bikes.length - 1]);
     var rArea = false;
     var rvals = false;
