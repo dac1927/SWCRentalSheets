@@ -9,8 +9,9 @@ function test() {
    bikes.push({type: "H17", letter: ["B"], rack: [true]});
    var combined = combineRentalBikes(bikes);
    var date = new Date();
+   Logger.log(findColumn(date));
    for(var i = 0; i < combined.length; i++)
-    findPotential(combined[i], "Devin", date, date, false);
+   inputBikes("Devin", null, date.toString(), bikes, false)
 }
 function logSomething() {
   Logger.log('something');
@@ -142,9 +143,7 @@ function onEdit(e) {
            typeString = typeRegex.exec(raw[a]);   //splitting id into it's components
            letterString = letterRegex.exec(raw[a]);
            Logger.log("raw: " + raw[a] + "type:" + typeString[0] + " letter: " + letterString[0].charAt(0) + "rack: " +  rackRegex.test(letterString[0]));
-           bikeTemp = {type: typeString[0], letter: [], rack: []};
-           bikeTemp.letter.push(letterString[0].charAt(0));
-           bikeTemp.rack.push(rackRegex.test(letterString[0]));
+           bikeTemp = {type: typeString[0], letter: letterString[0].charAt(0), rack: rackRegex.test(letterString[0])};
            bikeList.push(bikeTemp); //adding the bike to the list
         }
         storeObject(id, bikeList);                 //storing the list
@@ -204,8 +203,8 @@ function Bike(idInput) {
 }
 //lower level functions! #################################################################################################################################
 function findColumn(dateInput) {
-    var b;
-    return (b = PropertiesService.getScriptProperties().getProperty(dateFormat(dateInput))) === 'undefined' ? -1:b;
+    var b = PropertiesService.getScriptProperties().getProperty(dateFormat(dateInput));
+    return (b === 'undefined' || b === null? -1:b);
 }
 function findRow(mode, bikeInput) {
     var b
@@ -535,6 +534,7 @@ function inputBikes(name, sdate, edate, bikes, hasRez) {
   startDate.setDate(parseInt(sdate.split('-')[2], 10));
   var regex1 = new RegExp('^.*R$');
   for(var i = 0; i < bikes.length; i++) {
+    Logger.log(bikes[i].type)
     if (regex1.test(bikes[i].type)) {
       bikes[i].type = bikes[i].type.substr(0,bikes[i].type.length - 1);
       bikes[i].rack[0] = true;
@@ -577,8 +577,12 @@ function finishRental(name, sdate, edate, id, hasRez) { ///finishes the rental w
   var conflicts = []; //holds conflicts
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("rentals")
   var bikes = []; //holds bike objects
+  var bobj;
   for(var i = 0; i < id.length; i++) {
-    bikes.push.apply(bikes , retriveObject(id[i]));
+    //{type: typeString[0], letter: [letterString[0].charAt(0)], rack: [rackRegex.test(letterString[0])]}
+    bobj = retriveObject(id[i]);
+    for(var j = 0; j < bobj.length; j++)
+      bikes.push({type: bobj[j].type, letter: [bobj[j].letter], rack: [bobj[j].rack]});
   }
   bikes = combineRentalBikes(bikes);
   for(var i = 0; i < bikes.length; i++) {
