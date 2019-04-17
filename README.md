@@ -1,4 +1,4 @@
-# SWCrentalSheets
+# SWCRentalSheets
 Rental Sheet GUI/backend using GAS
 ## How to create sheet
 Make a copy of this [Demo Sheet](https://docs.google.com/spreadsheets/d/1aCLgKzn3c1kc_lLb4aoxDrGMwyWGG4-88-tAvaLwpHY/edit?usp=sharing).
@@ -11,3 +11,5 @@ If you want to be able to stay up do date with this repo, you'll need to use cla
 ### Rez Form
 ### Scanner
 ### Rental tools
+## Troubleshooting
+## How to open an Issue
